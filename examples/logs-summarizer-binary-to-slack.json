@@ -1,0 +1,92 @@
+{
+  "name": "Logs Summarizer (binary stdin) → Slack",
+  "nodes": [
+    {
+      "parameters": {
+        "requestMethod": "GET",
+        "url": "https://example.com/path/to/logs.txt",
+        "responseFormat": "file",
+        "options": {}
+      },
+      "id": "FetchLogs",
+      "name": "Fetch Logs",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        -380,
+        -20
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "print",
+        "instruction": "Summarize errors and likely root causes; propose remediation steps.",
+        "stdinSource": "binary",
+        "stdinBinaryProperty": "data"
+      },
+      "id": "DarkAuggie",
+      "name": "Dark Auggie",
+      "type": "@tankster-ai/n8n-nodes-dark-auggie.darkAuggie",
+      "typeVersion": 1,
+      "position": [
+        -60,
+        -20
+      ],
+      "credentials": {
+        "augmentApi": {
+          "id": "<FILL_YOUR_AUGMENT_CREDENTIAL_ID>",
+          "name": "<FILL_YOUR_AUGMENT_CREDENTIAL_NAME>"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "accessToken",
+        "channel": "#engineering",
+        "text": "={{$json.stdout}}"
+      },
+      "id": "SlackMsg",
+      "name": "Slack Message",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 1,
+      "position": [
+        260,
+        -20
+      ],
+      "credentials": {
+        "slackApi": {
+          "id": "<FILL_YOUR_SLACK_CREDENTIAL_ID>",
+          "name": "<FILL_YOUR_SLACK_CREDENTIAL_NAME>"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Fetch Logs": {
+      "main": [
+        [
+          {
+            "node": "Dark Auggie",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dark Auggie": {
+      "main": [
+        [
+          {
+            "node": "Slack Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "staticData": null
+}
+

@@ -1,0 +1,148 @@
+{
+  "name": "PR Auto-Review (Dark Auggie, compact)",
+  "nodes": [
+    {
+      "parameters": {
+        "events": [
+          "pullRequest"
+        ],
+        "additionalFields": {
+          "pullRequestAction": [
+            "opened",
+            "synchronize"
+          ]
+        }
+      },
+      "id": "GithubTrigger",
+      "name": "GitHub Trigger",
+      "type": "n8n-nodes-base.githubTrigger",
+      "typeVersion": 1,
+      "position": [
+        -420,
+        -20
+      ],
+      "credentials": {
+        "githubApi": {
+          "id": "<FILL_YOUR_GITHUB_CREDENTIAL_ID>",
+          "name": "<FILL_YOUR_GITHUB_CREDENTIAL_NAME>"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "predefinedCredentialType",
+        "requestMethod": "GET",
+        "url": "https://api.github.com/repos/{{$json[\"repository\"]?.owner?.login || $json.owner}}/{{$json[\"repository\"]?.name || $json.repo}}/pulls/{{$json.pull_request?.number || $json.number}}",
+        "allowUnauthorizedCerts": false,
+        "responseFormat": "string",
+        "options": {
+          "resolveBodyOnly": true,
+          "headers": {
+            "Accept": "application/vnd.github.v3.diff"
+          }
+        }
+      },
+      "id": "FetchDiff",
+      "name": "Fetch PR Diff",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        -100,
+        -20
+      ],
+      "credentials": {
+        "githubApi": {
+          "id": "<FILL_YOUR_GITHUB_CREDENTIAL_ID>",
+          "name": "<FILL_YOUR_GITHUB_CREDENTIAL_NAME>"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "print",
+        "printMode": "compact",
+        "instruction": "Review the following diff for correctness, security, and clarity. Return a concise bullet list of issues and suggestions.",
+        "stdinSource": "jsonPath",
+        "stdinJsonPath": "body"
+      },
+      "id": "DarkAuggie",
+      "name": "Dark Auggie",
+      "type": "@tankster-ai/n8n-nodes-dark-auggie.darkAuggie",
+      "typeVersion": 1,
+      "position": [
+        160,
+        -20
+      ],
+      "credentials": {
+        "augmentApi": {
+          "id": "<FILL_YOUR_AUGMENT_CREDENTIAL_ID>",
+          "name": "<FILL_YOUR_AUGMENT_CREDENTIAL_NAME>"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "createReview",
+        "resource": "pullRequest",
+        "owner": "={{$json[\"repository\"]?.owner?.login || $json.owner}}",
+        "repository": "={{$json[\"repository\"]?.name || $json.repo}}",
+        "pullRequestNumber": "={{$json.pull_request?.number || $json.number}}",
+        "event": "COMMENT",
+        "body": "={{$json.compactLines ? $json.compactLines.join(\"\\n\") : $json.stdout}}"
+      },
+      "id": "CreateReview",
+      "name": "Create PR Review",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1,
+      "position": [
+        460,
+        -20
+      ],
+      "credentials": {
+        "githubApi": {
+          "id": "<FILL_YOUR_GITHUB_CREDENTIAL_ID>",
+          "name": "<FILL_YOUR_GITHUB_CREDENTIAL_NAME>"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "GitHub Trigger": {
+      "main": [
+        [
+          {
+            "node": "Fetch PR Diff",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch PR Diff": {
+      "main": [
+        [
+          {
+            "node": "Dark Auggie",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dark Auggie": {
+      "main": [
+        [
+          {
+            "node": "Create PR Review",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "staticData": null
+}
+

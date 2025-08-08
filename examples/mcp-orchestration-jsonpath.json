@@ -1,0 +1,119 @@
+{
+  "name": "MCP Orchestration (JSON Path)",
+  "nodes": [
+    {
+      "parameters": {
+        "mode": "passThrough",
+        "jsCode": "return [{ json: { mcp: { tools: [{ name: 'github', url: 'https://api.github.com' }] } } }];"
+      },
+      "id": "SeedMCP",
+      "name": "Seed MCP JSON",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -380,
+        -20
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "interactive",
+        "continuePrevious": true,
+        "mcpConfigSource": "jsonPath",
+        "mcpJsonPath": "mcp",
+        "instruction": "Use available tools via MCP to fetch recent issues and classify them by severity. Output JSON with fields: counts, topIssues, and suggestedActions.",
+        "workspaceRoot": "/workspace"
+      },
+      "id": "DarkAuggie",
+      "name": "Dark Auggie",
+      "type": "@tankster-ai/n8n-nodes-dark-auggie.darkAuggie",
+      "typeVersion": 1,
+      "position": [
+        -20,
+        -20
+      ],
+      "credentials": {
+        "augmentApi": {
+          "id": "<FILL_YOUR_AUGMENT_CREDENTIAL_ID>",
+          "name": "<FILL_YOUR_AUGMENT_CREDENTIAL_NAME>"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const out = $json.stdout || '';\nlet parsed;\ntry { parsed = JSON.parse(out); } catch (e) { parsed = { text: out }; }\nreturn [{ json: parsed }];"
+      },
+      "id": "ParseJSON",
+      "name": "Parse JSON",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        280,
+        -20
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "issue",
+        "operation": "create",
+        "project": "ENG",
+        "summary": "Automated MCP Issue Summary",
+        "description": "={{JSON.stringify($json)}}"
+      },
+      "id": "JiraCreate",
+      "name": "Jira Create",
+      "type": "n8n-nodes-base.jira",
+      "typeVersion": 1,
+      "position": [
+        560,
+        -20
+      ],
+      "credentials": {
+        "jiraSoftwareCloudApi": {
+          "id": "<FILL_YOUR_JIRA_CREDENTIAL_ID>",
+          "name": "<FILL_YOUR_JIRA_CREDENTIAL_NAME>"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Seed MCP JSON": {
+      "main": [
+        [
+          {
+            "node": "Dark Auggie",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dark Auggie": {
+      "main": [
+        [
+          {
+            "node": "Parse JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse JSON": {
+      "main": [
+        [
+          {
+            "node": "Jira Create",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "staticData": null
+}
+
