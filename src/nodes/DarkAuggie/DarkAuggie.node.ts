@@ -8,6 +8,7 @@ import type {
   INodeType,
   INodeTypeDescription,
 } from 'n8n-workflow';
+import { NodeConnectionType } from 'n8n-workflow';
 
 const pExecFile = promisify(execFile);
 
@@ -23,8 +24,8 @@ export class DarkAuggie implements INodeType {
     defaults: {
       name: 'Dark Auggie',
     },
-    inputs: ['main'],
-    outputs: ['main'],
+    inputs: [NodeConnectionType.Main],
+    outputs: [NodeConnectionType.Main],
     credentials: [
       {
         name: 'augmentApi',
@@ -238,7 +239,7 @@ export class DarkAuggie implements INodeType {
     const rulesPath = (this.getNodeParameter('rulesPath', 0) as string) || '';
     const mcpConfigSource = (this.getNodeParameter('mcpConfigSource', 0) as string) || 'none';
 
-    function buildCommonFlags(): string[] {
+    const buildCommonFlags = (): string[] => {
       const flags: string[] = [];
       if (workspaceRoot) { flags.push('--workspace-root', workspaceRoot); }
       if (rulesPath) { flags.push('--rules', rulesPath); }
@@ -256,16 +257,20 @@ export class DarkAuggie implements INodeType {
         }
       }
       return flags;
-    }
+    };
 
     // stdin assembly per item
-    function resolveStdin(i: number): Buffer | undefined {
+    const resolveStdin = (i: number): Buffer | undefined => {
       const stdinSource = (this.getNodeParameter('stdinSource', i) as string) || 'none';
       if (stdinSource === 'jsonPath') {
         const p = (this.getNodeParameter('stdinJsonPath', i) as string) || '';
         if (p) {
-          const val = this.getNodeParameter(p, i) as any;
-          if (val !== undefined && val !== null) return Buffer.from(typeof val === 'string' ? val : JSON.stringify(val));
+          // getNodeParameter can read expression; for arbitrary json path, fallback to item.json
+          const val = this.getNodeParameter(p, i, undefined) as any;
+          const item = items[i];
+          const fallback = p.split('.').reduce((acc: any, key: string) => (acc ? acc[key] : undefined), item.json as any);
+          const data = val ?? fallback;
+          if (data !== undefined && data !== null) return Buffer.from(typeof data === 'string' ? data : JSON.stringify(data));
         }
       } else if (stdinSource === 'binary') {
         const binProp = (this.getNodeParameter('stdinBinaryProperty', i) as string) || '';
@@ -274,7 +279,7 @@ export class DarkAuggie implements INodeType {
         }
       }
       return undefined;
-    }
+    };
 
     for (let i = 0; i < items.length; i++) {
       try {
