@@ -1,0 +1,26 @@
+module.exports = {
+  root: true,
+  parser: '@typescript-eslint/parser',
+  parserOptions: {
+    project: ['./tsconfig.json'],
+    ecmaVersion: 2020,
+    sourceType: 'module',
+  },
+  env: {
+    node: true,
+    es2020: true,
+    jest: true,
+  },
+  plugins: ['@typescript-eslint'],
+  extends: [
+    'eslint:recommended',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:@typescript-eslint/recommended-requiring-type-checking',
+    'prettier',
+  ],
+  ignorePatterns: ['dist', 'node_modules'],
+  rules: {
+    '@typescript-eslint/no-explicit-any': 'off',
+  },
+};
+
