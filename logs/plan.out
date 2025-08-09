@@ -1,269 +1,566 @@
 🤖
-I'll first scan the repository to locate existing SVG/icon assets and any icon README to understand the current structure and references. Then I'll set up a minimal tasklist with one exploratory task to keep our work organized before making changes.
+I'll start by quickly inspecting the repository root to see if a Node project (package.json) already exists and understand the current structure. This will let me plan the setup precisely.
 
 
-[90m🔧 Tool call: codebase-retrieval[0m
-   information_request: "Locate all icon/SVG assets and documentation. Specifically: 1) directories like icons/, assets/, static/, public/ containing .svg files; 2) any README related to icons (e.g., icons/README.md); 3) any existing files named with 'auggie' or 'dark' in filename (e.g., *auggie*.svg, dark-auggie.svg); 4) where the 'main icon' is referenced/consumed (e.g., package.json fields, README badges, app manifest, favicon)."
+[90m🔧 Tool call: view[0m
+   type: "directory"
+   path: "."
 
-[90m📋 Tool result: codebase-retrieval[0m
-The following code sections were retrieved:
-Path: src/nodes/DarkAuggie/icons/README.md
-     1	# Dark Auggie Icon Variants
-     2	
-     3	This folder contains multiple SVG explorations for the Dark Auggie icon. All assets are pure SVG (no raster), designed to be legible at 32px/64px and scalable up.
-     4	
-     5	Files
-     6	- dark-auggie-v1-badge.svg — Badge Minimal
-     7	- dark-auggie-v2-visor.svg — Visor Emphasis
-     8	- dark-auggie-v3-core-glow.svg — Core Glow (final candidate)
-     9	- dark-auggie-v4-glyph.svg — Glyph only (no plate)
-    10	
-    11	Final icon (used by the node)
-    12	- ../../DarkAuggie/dark-auggie.svg — replaced to reference the v3-style "Core Glow" treatment
-    13	
-... (464 more lines)
+[90m📋 Tool result: view[0m
+Here's the files and directories up to 2 levels deep in ., excluding hidden items:
+./LICENSE
+./README.md
+./commitlint.config.cjs
+./dist
+./examples
+./jest.config.ts
+./logs
+./node_modules
+./package-lock.json
+./package.json
+./src
+./tests
+./tsconfig.json
+./dist/credentials
+... (67 more lines)
 🤖
-I'll open the icons README to see its exact contents so I can update the list and final selection accurately, then proceed to add new SVG variants and update the main icon.
+I'll open the key config files (package.json, Jest and Commitlint configs, and an existing test) to see what's already set up and what needs to be added or updated. This helps avoid duplicating or breaking existing tooling.
 
 
 [90m🔧 Tool call: view[0m
    type: "file"
-   path: "src/nodes/DarkAuggie/icons/README.md"
+   path: "package.json"
 
 [90m📋 Tool result: view[0m
-Here's the result of running `cat -n` on src/nodes/DarkAuggie/icons/README.md:
-     1	# Dark Auggie Icon Variants
+Here's the result of running `cat -n` on package.json:
+     1	{
+     2	  "name": "@tankster-ai/n8n-nodes-dark-auggie",
+     3	  "version": "0.1.0",
+     4	  "description": "Dark Auggie: n8n community node wrapping the Augment Code Auggie CLI for automated AI workflows.",
+     5	  "license": "MIT",
+     6	  "type": "module",
+     7	  "engines": {
+     8	    "node": ">=24.5.0"
+     9	  },
+    10	  "exports": {
+    11	    ".": "./dist/index.js"
+    12	  },
+    13	  "main": "dist/index.js",
+    14	  "types": "dist/index.d.ts",
+... (77 more lines)
+🤖
+I'll open the relevant config and test files to assess current setup and identify gaps or incompatibilities (e.g., Jest config, commitlint, tsconfig, and a sample test).
+
+
+[90m🔧 Tool call: view[0m
+   type: "file"
+   path: "jest.config.ts"
+
+[90m📋 Tool result: view[0m
+Here's the result of running `cat -n` on jest.config.ts:
+     1	import type { Config } from 'jest';
      2	
-     3	This folder contains multiple SVG explorations for the Dark Auggie icon. All assets are pure SVG (no raster), designed to be legible at 32px/64px and scalable up.
+     3	const config: Config = {
+     4	  testEnvironment: 'node',
+     5	  extensionsToTreatAsEsm: ['.ts'],
+     6	  transform: {
+     7	    '^.+\\.(ts)$': [
+     8	      'ts-jest',
+     9	      {
+    10	        useESM: true,
+    11	        tsconfig: 'tsconfig.json',
+    12	      },
+    13	    ],
+    14	  },
+... (14 more lines)
+🤖
+I'll open commitlint config and the existing test files to check their content and ensure they align with the requested tooling.
+
+
+[90m🔧 Tool call: view[0m
+   type: "file"
+   path: "commitlint.config.cjs"
+
+[90m📋 Tool result: view[0m
+Here's the result of running `cat -n` on commitlint.config.cjs:
+     1	module.exports = {
+     2	  extends: ['@commitlint/config-conventional'],
+     3	};
      4	
-     5	Files
-     6	- dark-auggie-v1-badge.svg — Badge Minimal
-     7	- dark-auggie-v2-visor.svg — Visor Emphasis
-     8	- dark-auggie-v3-core-glow.svg — Core Glow (final candidate)
-     9	- dark-auggie-v4-glyph.svg — Glyph only (no plate)
+     5	
+Total lines in file: 5
+
+
+[90m🔧 Tool call: view[0m
+   type: "file"
+   path: "tests/math.test.ts"
+
+[90m📋 Tool result: view[0m
+Here's the result of running `cat -n` on tests/math.test.ts:
+     1	import { add } from '../src/utils/math';
+     2	
+     3	describe('math.add', () => {
+     4	  it('adds two numbers', () => {
+     5	    expect(add(2, 3)).toBe(5);
+     6	  });
+     7	});
+     8	
+     9	
+Total lines in file: 9
+
+
+[90m🔧 Tool call: view[0m
+   type: "directory"
+   path: "src/utils"
+
+[90m📋 Tool result: view[0m
+Here's the files and directories up to 2 levels deep in src/utils, excluding hidden items:
+src/utils/math.ts
+
+
+[90m🔧 Tool call: view[0m
+   type: "file"
+   path: "src/utils/math.ts"
+
+[90m📋 Tool result: view[0m
+Here's the result of running `cat -n` on src/utils/math.ts:
+     1	export function add(a: number, b: number): number {
+     2	  return a + b;
+     3	}
+     4	
+     5	
+Total lines in file: 5
+
+🤖
+I'll check whether a .husky directory already exists to decide whether I need to create hook files and the helper script reference.
+
+
+[90m🔧 Tool call: view[0m
+   type: "directory"
+   path: ".husky"
+
+[90m📋 Tool result: view[0m
+Here's the files and directories up to 2 levels deep in .husky, excluding hidden items:
+.husky/_
+.husky/commit-msg
+.husky/pre-commit
+.husky/pre-push
+.husky/_/applypatch-msg
+.husky/_/commit-msg
+.husky/_/h
+.husky/_/husky.sh
+.husky/_/post-applypatch
+.husky/_/post-checkout
+.husky/_/post-commit
+.husky/_/post-merge
+.husky/_/post-rewrite
+.husky/_/pre-applypatch
+... (7 more lines)
+🤖
+I'll open the existing Husky hook scripts to ensure they run the right commands (lint-staged, commitlint, tests) and adjust if needed.
+
+
+[90m🔧 Tool call: view[0m
+   type: "file"
+   path: ".husky/pre-commit"
+
+[90m📋 Tool result: view[0m
+Here's the result of running `cat -n` on .husky/pre-commit:
+     1	#!/bin/sh
+     2	. "$(dirname "$0")/_/husky.sh"
+     3	
+     4	# Lint-staged handles staged files
+     5	npx lint-staged
+     6	
+     7	# Type check
+     8	npm run typecheck
+     9	
     10	
-    11	Final icon (used by the node)
-    12	- ../../DarkAuggie/dark-auggie.svg — replaced to reference the v3-style "Core Glow" treatment
-    13	
-    14	Preview locally
-... (12 more lines)
+Total lines in file: 10
+
+
+[90m🔧 Tool call: view[0m
+   type: "file"
+   path: ".husky/commit-msg"
+
+[90m📋 Tool result: view[0m
+Here's the result of running `cat -n` on .husky/commit-msg:
+     1	#!/bin/sh
+     2	. "$(dirname "$0")/_/husky.sh"
+     3	
+     4	npx --no -- commitlint --edit "$1"
+     5	
+     6	
+Total lines in file: 6
+
+
+[90m🔧 Tool call: view[0m
+   type: "file"
+   path: ".husky/pre-push"
+
+[90m📋 Tool result: view[0m
+Here's the result of running `cat -n` on .husky/pre-push:
+     1	#!/bin/sh
+     2	. "$(dirname "$0")/_/husky.sh"
+     3	
+     4	# Run tests before pushing
+     5	npm run test:ci
+     6	
+     7	
+Total lines in file: 7
+
+🤖
+I'll quickly peek at tsconfig.json to ensure it aligns with the Node ESM setup and Jest.
+
+
+[90m🔧 Tool call: view[0m
+   type: "file"
+   path: "tsconfig.json"
+
+[90m📋 Tool result: view[0m
+Here's the result of running `cat -n` on tsconfig.json:
+     1	{
+     2	  "compilerOptions": {
+     3	    "target": "ES2020",
+     4	    "lib": ["ES2020"],
+     5	    "module": "CommonJS",
+     6	    "moduleResolution": "Node",
+     7	    "outDir": "dist",
+     8	    "rootDir": "src",
+     9	    "declaration": true,
+    10	    "sourceMap": true,
+    11	    "strict": true,
+    12	    "esModuleInterop": true,
+    13	    "forceConsistentCasingInFileNames": true,
+    14	    "skipLibCheck": true,
+... (8 more lines)
 🤖
 Planned changes:
-- Add three new SVG variants under src/nodes/DarkAuggie/icons/: v5-legible, v6-tiny, v7-outline
-- Update main icon src/nodes/DarkAuggie/dark-auggie.svg to the finalized v5-legible design
-- Update src/nodes/DarkAuggie/icons/README.md to list the new files and mark v5 as the final
+- Add ESLint v9 flat config (eslint.config.js) with TypeScript support and sensible rules
+- Add Prettier config and ignore files
+- Add GitHub Actions CI workflow to run lint, typecheck, format:check, and tests
+- Verify by running lint and tests
 
-Proceeding to add the new SVG files first.
-
-
-[90m🔧 Tool call: save-file[0m
-   instructions_reminder: "LIMIT THE FILE CONTENT TO AT MOST 300 LINES. IF MORE CONTENT NEEDS TO BE ADDED USE THE str-replace-editor TOOL TO EDIT THE FILE AFTER IT HAS BEEN CREATED."
-   path: "src/nodes/DarkAuggie/icons/dark-auggie-v5-legible.svg"
-   file_content: "<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" fill="none">
-     <title>Dark Auggie v5 — Legible (Final)</title>
-     <defs>
-       <linearGradient id="v5g_bg" x1="0" y1="0" x2="1" y2="1">
-         <stop offset="0" stop-color="#0B0B0B"/>
-         <stop offset="1" stop-color="#1B1B1B"/>
-       </linearGradient>
-       <linearGradient id="v5g_core" x1="128" y1="60" x2="128" y2="196">
-         <stop offset="0" stop-color="#3D855E"/>
-         <stop offset="1" stop-color="#2F6A4A"/>
-       </linearGradient>
-       <filter id="v5f_softGlow" x="-30%" y="-30%" width="160%" height="160%">
-         <feGaussianBlur stdDeviation="2" result="blur"/>
-... (22 more lines)
-
-[90m📋 Tool result: save-file[0m
-File saved.  Saved file {src/nodes/DarkAuggie/icons/dark-auggie-v5-legible.svg}
-🤖
-I'll add two more SVG variants (v6-tiny and v7-outline), then update the main icon file to the finalized design and revise the icons README to list the new variants and mark v5 as final. After changes, I'll run a quick build to ensure nothing broke.
+I'll create the new config files now.
 
 
 [90m🔧 Tool call: save-file[0m
    instructions_reminder: "LIMIT THE FILE CONTENT TO AT MOST 300 LINES. IF MORE CONTENT NEEDS TO BE ADDED USE THE str-replace-editor TOOL TO EDIT THE FILE AFTER IT HAS BEEN CREATED."
-   path: "src/nodes/DarkAuggie/icons/dark-auggie-v6-tiny.svg"
-   file_content: "<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" fill="none">
-     <title>Dark Auggie v6 — Tiny Size Optimized</title>
-     <defs>
-       <linearGradient id="v6g_core" x1="128" y1="60" x2="128" y2="196">
-         <stop offset="0" stop-color="#3D855E"/>
-         <stop offset="1" stop-color="#2F6A4A"/>
-       </linearGradient>
-     </defs>
+   path: "eslint.config.js"
+   file_content: "import tsParser from '@typescript-eslint/parser';
+   import tsPlugin from '@typescript-eslint/eslint-plugin';
    
-     <!-- No background plate; high contrast glyph only for 16–24px clarity -->
-     <path d="M128 36 L206 200 H176 L156 160 H100 L80 200 H50 L128 36 Z" fill="#0F0F0F"/>
-     <path d="M128 52 L172 146 H152 L128 98 L104 146 H84 L128 52 Z" fill="#151515"/>
-     <!-- Wider core for pixel hinting at tiny sizes -->
-... (4 more lines)
+   /** @type {import('eslint').Linter.FlatConfig[]} */
+   export default [
+     // Ignore generated and vendor folders
+     { ignores: ['dist/**', 'node_modules/**', 'coverage/**', 'logs/**'] },
+   
+     // TypeScript source files
+     {
+       files: ['**/*.ts'],
+       languageOptions: {
+         parser: tsParser,
+... (35 more lines)
 
 [90m📋 Tool result: save-file[0m
-File saved.  Saved file {src/nodes/DarkAuggie/icons/dark-auggie-v6-tiny.svg}
+File saved.  Saved file {eslint.config.js}
 🤖
-I'll open the existing main icon to safely replace its full content with the finalized v5 design, then update the icons README list and "Final icon" section accordingly. Finally, I'll add the v7 outline variant.
+Planned validation: run lint, format:check, typecheck, and tests to ensure the setup works end-to-end.
+
+
+[90m🔧 Tool call: launch-process[0m
+   command: "npm run lint"
+   wait: true
+   max_wait_seconds: 600
+   cwd: "/Users/rishitank/github/dark-auggie-worktrees/tooling-setup"
+
+[90m📋 Tool result: launch-process[0m
+❌ Error:
+  Command failed with exit code 127
+
+📤 Output:
+/Users/rishitank/.bashrc: line 143: brew: command not found
+/Users/rishitank/acd_func.sh: line 61: bind: warning: line editing not enabled
+/Users/rishitank/.fzf.bash: line 13: /usr/local/opt/fzf/shell/key-bindings.bash: No such file or directory
+env: node: No such file or directory
+🤖
+I'll quickly open dist/index.js to verify the emitted module format versus package type, to avoid breaking the build and tests.
 
 
 [90m🔧 Tool call: view[0m
    type: "file"
-   path: "src/nodes/DarkAuggie/dark-auggie.svg"
+   path: "dist/index.js"
 
 [90m📋 Tool result: view[0m
-Here's the result of running `cat -n` on src/nodes/DarkAuggie/dark-auggie.svg:
-     1	<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" fill="none">
-     2	  <!-- Dark Auggie icon: Sith-helmed A with Augment green core -->
-     3	  <defs>
-     4	    <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
-     5	      <stop offset="0" stop-color="#0B0B0B"/>
-     6	      <stop offset="1" stop-color="#1C1917"/>
-     7	    </linearGradient>
-     8	    <linearGradient id="blade" x1="128" y1="24" x2="128" y2="210">
-     9	      <stop offset="0" stop-color="#3D855E"/>
-    10	      <stop offset="1" stop-color="#2F6A4A"/>
-    11	    </linearGradient>
-    12	    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-    13	      <feGaussianBlur stdDeviation="6" result="blur"/>
-    14	      <feMerge>
-... (36 more lines)
+Here's the result of running `cat -n` on dist/index.js:
+     1	"use strict";
+     2	Object.defineProperty(exports, "__esModule", { value: true });
+     3	//# sourceMappingURL=index.js.map
+Total lines in file: 3
 
-[90m🔧 Tool call: save-file[0m
-   instructions_reminder: "LIMIT THE FILE CONTENT TO AT MOST 300 LINES. IF MORE CONTENT NEEDS TO BE ADDED USE THE str-replace-editor TOOL TO EDIT THE FILE AFTER IT HAS BEEN CREATED."
-   path: "src/nodes/DarkAuggie/icons/dark-auggie-v7-outline.svg"
-   file_content: "<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" fill="none">
-     <title>Dark Auggie v7 — Outline</title>
-     <defs>
-       <linearGradient id="v7g_core" x1="128" y1="60" x2="128" y2="196">
-         <stop offset="0" stop-color="#3D855E"/>
-         <stop offset="1" stop-color="#2F6A4A"/>
-       </linearGradient>
-     </defs>
-   
-     <!-- Outline-forward variant (no plate) -->
-     <path d="M128 36 L206 200 H176 L156 160 H100 L80 200 H50 L128 36 Z" fill="none" stroke="#0E0E0E" stroke-width="3"/>
-     <path d="M128 52 L172 146 H152 L128 98 L104 146 H84 L128 52 Z" fill="none" stroke="#141414" stroke-width="2"/>
-     <rect x="121" y="70" width="14" height="128" rx="7" fill="url(#v7g_core)"/>
-... (3 more lines)
 
-[90m📋 Tool result: save-file[0m
-File saved.  Saved file {src/nodes/DarkAuggie/icons/dark-auggie-v7-outline.svg}
+[90m🔧 Tool call: view[0m
+   type: "file"
+   path: "src/index.ts"
+
+[90m📋 Tool result: view[0m
+Here's the result of running `cat -n` on src/index.ts:
+     1	export {};
+     2	
+     3	
+Total lines in file: 3
+
+🤖
+Planned file changes:
+- Update eslint.config.js to include eslint-config-prettier flat config
+- Add .prettierrc.json and .prettierignore
+- Add GitHub Actions workflow at .github/workflows/ci.yml to run lint, typecheck, format:check, build, and tests
+
+Proceeding to apply these changes.
+
 
 [90m🔧 Tool call: str-replace-editor[0m
-[36m📝 src/nodes/DarkAuggie/dark-auggie.svg (line 2 → line 2)[0m
-[31m-  <!-- Dark Auggie icon: Sith-helmed A with Augment green core -->[0m
-[32m+  <title>Dark Auggie — Final (v5 Legible)</title>[0m
-[36m📝 src/nodes/DarkAuggie/dark-auggie.svg (line 4 → line 4)[0m
-[31m-    <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">[0m
-[32m+    <linearGradient id="g_bg" x1="0" y1="0" x2="1" y2="1">[0m
-[36m📝 src/nodes/DarkAuggie/dark-auggie.svg (line 6 → line 6)[0m
-[31m-      <stop offset="1" stop-color="#1C1917"/>[0m
-[32m+      <stop offset="1" stop-color="#1B1B1B"/>[0m
-[36m📝 src/nodes/DarkAuggie/dark-auggie.svg (line 8 → line 8)[0m
-[31m-    <linearGradient id="blade" x1="128" y1="24" x2="128" y2="210">[0m
-[32m+    <linearGradient id="g_core" x1="128" y1="60" x2="128" y2="196">[0m
-[36m📝 src/nodes/DarkAuggie/dark-auggie.svg (lines 12-13 → lines 12-13)[0m
-[31m-    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">[0m
-[31m-      <feGaussianBlur stdDeviation="6" result="blur"/>[0m
-[2m... 40 more lines[0m
+[36m📝 eslint.config.js (lines 2-1 → line 3)[0m
+[32m+import prettier from 'eslint-config-prettier';[0m
+[36m📝 eslint.config.js (lines 45-44 → lines 47-49)[0m
+[32m+[0m
+[32m+  // Turn off rules that might conflict with Prettier[0m
+[32m+  prettier,[0m
 
 [90m📋 Tool result: str-replace-editor[0m
-Successfully edited the file src/nodes/DarkAuggie/dark-auggie.svg.
+Successfully edited the file eslint.config.js.
 Result for str_replace for entry with index [1]:
 Replacement successful.
-new_str starts at line 1 and ends at line 34.
+new_str starts at line 1 and ends at line 51.
 
 Review the changes and make sure they are as expected (correct indentation, no duplicate lines, etc).
 Edit the file again if necessary.
 
 
+[90m🔧 Tool call: save-file[0m
+   instructions_reminder: "LIMIT THE FILE CONTENT TO AT MOST 300 LINES. IF MORE CONTENT NEEDS TO BE ADDED USE THE str-replace-editor TOOL TO EDIT THE FILE AFTER IT HAS BEEN CREATED."
+   path: ".prettierrc.json"
+   file_content: "{
+     "$schema": "https://json.schemastore.org/prettierrc",
+     "semi": true,
+     "singleQuote": true,
+     "trailingComma": "all",
+     "printWidth": 100
+   }
+   "
+   add_last_line_newline: true
+
+[90m📋 Tool result: save-file[0m
+❌ Error:
+File already exists: /Users/rishitank/github/dark-auggie-worktrees/tooling-setup/.prettierrc.json
+
+[90m🔧 Tool call: view[0m
+   type: "file"
+   path: ".prettierrc.json"
+
+[90m📋 Tool result: view[0m
+Here's the result of running `cat -n` on .prettierrc.json:
+     1	{
+     2	  "semi": true,
+     3	  "singleQuote": true,
+     4	  "trailingComma": "all",
+     5	  "printWidth": 100
+     6	}
+     7	
+     8	
+Total lines in file: 8
+
+
+[90m🔧 Tool call: save-file[0m
+   instructions_reminder: "LIMIT THE FILE CONTENT TO AT MOST 300 LINES. IF MORE CONTENT NEEDS TO BE ADDED USE THE str-replace-editor TOOL TO EDIT THE FILE AFTER IT HAS BEEN CREATED."
+   path: ".prettierignore"
+   file_content: "dist
+   node_modules
+   coverage
+   logs
+   "
+   add_last_line_newline: true
+
+[90m📋 Tool result: save-file[0m
+❌ Error:
+File already exists: /Users/rishitank/github/dark-auggie-worktrees/tooling-setup/.prettierignore
+
+[90m🔧 Tool call: view[0m
+   type: "file"
+   path: ".prettierignore"
+
+[90m📋 Tool result: view[0m
+Here's the result of running `cat -n` on .prettierignore:
+     1	dist
+     2	coverage
+     3	node_modules
+     4	
+     5	
+Total lines in file: 5
+
+
+[90m🔧 Tool call: view[0m
+   type: "directory"
+   path: ".github"
+
+[90m📋 Tool result: view[0m
+Here's the files and directories up to 2 levels deep in .github, excluding hidden items:
+.github/workflows
+.github/workflows/ci.yml
+
+
+[90m🔧 Tool call: view[0m
+   type: "file"
+   path: ".github/workflows/ci.yml"
+
+[90m📋 Tool result: view[0m
+Here's the result of running `cat -n` on .github/workflows/ci.yml:
+     1	name: CI
+     2	
+     3	on:
+     4	  pull_request:
+     5	    branches: ["**"]
+     6	
+     7	jobs:
+     8	  build:
+     9	    runs-on: ubuntu-latest
+    10	    steps:
+    11	      - name: Checkout
+    12	        uses: actions/checkout@v4
+    13	
+    14	      - name: Setup Node.js
+... (20 more lines)
+
 [90m🔧 Tool call: str-replace-editor[0m
-[36m📝 src/nodes/DarkAuggie/icons/README.md (line 3 → line 3)[0m
-[31m-This folder contains multiple SVG explorations for the Dark Auggie icon. All assets are pure SVG (no raster), designed to be legible at 32px/64px and scalable up.[0m
-[32m+This folder contains multiple SVG explorations for the Dark Auggie icon. All assets are pure SVG (no raster), designed to be legible at 16px/24px/32px and scalable up.[0m
-[36m📝 src/nodes/DarkAuggie/icons/README.md (line 8 → line 8)[0m
-[31m-- dark-auggie-v3-core-glow.svg — Core Glow (final candidate)[0m
-[32m+- dark-auggie-v3-core-glow.svg — Core Glow (candidate)[0m
-[36m📝 src/nodes/DarkAuggie/icons/README.md (lines 9-8 → lines 10-12)[0m
-[32m+- dark-auggie-v5-legible.svg — Legible plate + wider core (FINAL)[0m
-[32m+- dark-auggie-v6-tiny.svg — Tiny-size optimized glyph (no plate)[0m
-[32m+- dark-auggie-v7-outline.svg — Outline-forward glyph (no plate)[0m
-[36m📝 src/nodes/DarkAuggie/icons/README.md (line 12 → line 15)[0m
-[31m-- ../../DarkAuggie/dark-auggie.svg — replaced to reference the v3-style "Core Glow" treatment[0m
-[32m+- ../../DarkAuggie/dark-auggie.svg — now references the v5 "Legible" treatment[0m
-[36m📝 src/nodes/DarkAuggie/icons/README.md (line 19 → line 22)[0m
-[31m-Notes[0m
-[2m... 7 more lines[0m
+[36m📝 .github/workflows/ci.yml (line 17 → line 17)[0m
+[31m-          node-version: 'lts/*'[0m
+[32m+          node-version: '24.x'[0m
+[36m📝 .github/workflows/ci.yml (lines 25-24 → lines 26-28)[0m
+[32m+      - name: Format check[0m
+[32m+        run: npm run format:check[0m
+[32m+[0m
+[36m📝 .github/workflows/ci.yml (lines 28-27 → lines 32-34)[0m
+[32m+      - name: Build[0m
+[32m+        run: npm run build[0m
+[32m+[0m
 
 [90m📋 Tool result: str-replace-editor[0m
-Successfully edited the file src/nodes/DarkAuggie/icons/README.md.
+Successfully edited the file .github/workflows/ci.yml.
 Result for str_replace for entry with index [1]:
 Replacement successful.
-new_str starts at line 1 and ends at line 27.
+new_str starts at line 1 and ends at line 37.
 
 Review the changes and make sure they are as expected (correct indentation, no duplicate lines, etc).
 Edit the file again if necessary.
 
 🤖
-## Plan and status
+## Plan and current status
 
-- Generate new SVG iterations focused on legibility at small sizes
-- Select and apply a final version as the main icon
-- Update the icons README to reflect new variants and guidance
+I reviewed your repository and found most of the requested tooling already present. I completed the missing pieces and tightened CI:
 
-All tasks completed.
+- ESLint v9 flat config: added eslint.config.js (with TypeScript and Prettier compatibility)
+- Prettier: existing config/ignore confirmed
+- Husky + lint-staged: hooks and config already present
+- Commitlint + Commitizen: config and scripts already present
+- Jest: config and a minimal test already present
+- CI workflow: extended to also run format:check and build; pinned Node 24.x
+
+Note: I attempted to run local validation, but the environment didn’t have Node available, so I couldn’t verify locally. CI will validate when you push.
 
 ## What I changed
 
-- Added new variants:
-  - src/nodes/DarkAuggie/icons/dark-auggie-v5-legible.svg (Final)
-  - src/nodes/DarkAuggie/icons/dark-auggie-v6-tiny.svg (Tiny-size optimized)
-  - src/nodes/DarkAuggie/icons/dark-auggie-v7-outline.svg (Outline-forward)
+- Added ESLint v9 flat config with TypeScript and Prettier integration
+- Updated GitHub Actions workflow to:
+  - Use Node 24.x (matches package.json engines)
+  - Add format:check and build steps
 
-- Updated main icon to the final design:
-  - src/nodes/DarkAuggie/dark-auggie.svg now uses the v5 “Legible” treatment
+## Highlights (small excerpts)
 
-- Updated icon documentation:
-  - src/nodes/DarkAuggie/icons/README.md lists new files, marks v5 as final, and adds legibility guidelines
+- ESLint flat config (TypeScript + Prettier)
+````js path=eslint.config.js mode=EXCERPT
+import tsParser from '@typescript-eslint/parser';
+import tsPlugin from '@typescript-eslint/eslint-plugin';
+import prettier from 'eslint-config-prettier';
 
-## Legibility decisions
-
-- Final (v5): High-contrast plate, slightly thicker A silhouette stroke (1.5px), and a wider green core (14px at 256px canvas) with a mild soft glow for clarity at 24px–64px+.
-- Tiny (v6): Plate-less glyph with a wider core (16px) for better pixel hinting at 16–20px.
-- Outline (v7): Plate-less outline-forward option for use on light/flat backgrounds.
-
-Guidance:
-- Use v6 around 16–20px, v5 at 24px+, v7 where a simple outline works best.
-- Keep the Augment core colors between #3D855E and #2F6A4A.
-- Avoid minor decorative elements that blur at small sizes.
-
-## Key snippets
-
-Updated main icon (title reflects finalization):
-````xml path=src/nodes/DarkAuggie/dark-auggie.svg mode=EXCERPT
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
-  <title>Dark Auggie — Final (v5 Legible)</title>
-  <defs>
-    <linearGradient id="g_bg" x1="0" y1="0" x2="1" y2="1">
+export default [
+  { ignores: ['dist/**', 'node_modules/**', 'coverage/**', 'logs/**'] },
+  { files: ['**/*.ts'], languageOptions: { parser: tsParser, parserOptions: { project: false, sourceType: 'module', ecmaVersion: 'latest' } },
 ````
 
-Icons README additions (v5 marked FINAL):
-````markdown path=src/nodes/DarkAuggie/icons/README.md mode=EXCERPT
-- dark-auggie-v5-legible.svg — Legible plate + wider core (FINAL)
-- dark-auggie-v6-tiny.svg — Tiny-size optimized glyph (no plate)
-- dark-auggie-v7-outline.svg — Outline-forward glyph (no plate)
+- CI: Node 24.x, format check, build
+````yaml path=.github/workflows/ci.yml mode=EXCERPT
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24.x'
+          cache: 'npm'
+      - name: Format check
+        run: npm run format:check
 ````
 
-## Files touched
+- Husky pre-commit (already present)
+````sh path=.husky/pre-commit mode=EXCERPT
+# Lint-staged handles staged files
+npx lint-staged
 
-- Modified:
-  - src/nodes/DarkAuggie/dark-auggie.svg
-  - src/nodes/DarkAuggie/icons/README.md
-- Added:
-  - src/nodes/DarkAuggie/icons/dark-auggie-v5-legible.svg
-  - src/nodes/DarkAuggie/icons/dark-auggie-v6-tiny.svg
-  - src/nodes/DarkAuggie/icons/dark-auggie-v7-outline.svg
+# Type check
+npm run typecheck
+````
 
-## Next steps (optional)
+- Jest config (already present)
+````ts path=jest.config.ts mode=EXCERPT
+const config: Config = {
+  testEnvironment: 'node',
+  extensionsToTreatAsEsm: ['.ts'],
+  transform: { '^.+\\.(ts)$': ['ts-jest', { useESM: true, tsconfig: 'tsconfig.json' }] },
+````
 
-- Do you want PNG exports (e.g., 16/24/32/64/128) or a favicon set generated from these?
-- If you want me to verify the build and preview locally, I can run a quick build and spin a local server to eyeball rendering across sizes.
+- Minimal test (already present)
+````ts path=tests/math.test.ts mode=EXCERPT
+import { add } from '../src/utils/math';
+
+describe('math.add', () => {
+  it('adds two numbers', () => {
+````
+
+## Scripts you can use
+
+- Lint: npm run lint
+- Fix lint: npm run lint:fix
+- Format: npm run format
+- Format check: npm run format:check
+- Typecheck: npm run typecheck
+- Test: npm test
+- Test watch: npm run test:watch
+- CI tests: npm run test:ci
+- Commit with Commitizen: npm run commit
+
+## Validation
+
+- Local runs failed because Node is not available in this environment. Once you push, CI will run lint, format:check, typecheck, build, and tests.
+- Safe suggestion: run locally before pushing:
+  - npm ci
+  - npm run lint && npm run format:check && npm run typecheck && npm run build && npm run test:ci
+
+## Important follow-ups and questions
+
+There are two alignment items worth addressing:
+
+1) tsconfig.module vs package.json type  
+- package.json sets "type": "module", but tsconfig uses "module": "CommonJS". That compiles .js in dist as CJS while Node treats .js as ESM, leading to runtime import issues for consumers.
+- Recommendation: switch tsconfig to output ESM (for example "module": "ES2020" and consider "moduleResolution": "Bundler" or "NodeNext" as appropriate), or change the build to emit .cjs if you intend to keep CJS. I can make this change if you confirm your target format (ESM vs CJS).
+
+2) Jest 30 + ts-jest compatibility  
+- You currently use jest "^30" and ts-jest "^29". ts-jest 29 is typically paired with Jest 29; compatibility with Jest 30 may be limited.
+- Options:
+  - A) Pin Jest to "^29" (no other changes), or
+  - B) Keep Jest 30 and switch to babel-jest with @babel/preset-typescript, or
+  - C) If there is a ts-jest version that officially supports Jest 30, upgrade to that.
+- Tell me your preferred route and I’ll adjust package.json and config accordingly (using the proper package manager commands).
+
+Would you like me to:
+- Align TypeScript module output with your ESM package?
+- Align Jest/ts-jest (pick A, B, or C above)?
+
+Once you confirm, I’ll implement and then run the validations. If you prefer, I can also add a Node matrix in CI (e.g., 20.x, 22.x, 24.x).
 
