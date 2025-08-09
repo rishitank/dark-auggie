@@ -1,0 +1,552 @@
+{
+  "auditReportVersion": 2,
+  "vulnerabilities": {
+    "@azure/identity": {
+      "name": "@azure/identity",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1106621,
+          "name": "@azure/identity",
+          "dependency": "@azure/identity",
+          "title": "Azure Identity Libraries and Microsoft Authentication Library Elevation of Privilege Vulnerability",
+          "url": "https://github.com/advisories/GHSA-m5vv-6r4h-3vj9",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-362"
+          ],
+          "cvss": {
+            "score": 5.5,
+            "vectorString": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N"
+          },
+          "range": "<4.2.1"
+        }
+      ],
+      "effects": [
+        "tedious"
+      ],
+      "range": "<4.2.1",
+      "nodes": [
+        "node_modules/@azure/identity"
+      ],
+      "fixAvailable": true
+    },
+    "@n8n/client-oauth2": {
+      "name": "@n8n/client-oauth2",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "axios"
+      ],
+      "effects": [
+        "n8n-core"
+      ],
+      "range": "<=0.10.0",
+      "nodes": [
+        "node_modules/@n8n/client-oauth2"
+      ],
+      "fixAvailable": true
+    },
+    "axios": {
+      "name": "axios",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1097679,
+          "name": "axios",
+          "dependency": "axios",
+          "title": "Axios Cross-Site Request Forgery Vulnerability",
+          "url": "https://github.com/advisories/GHSA-wf5p-g6vw-rhxx",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-352"
+          ],
+          "cvss": {
+            "score": 6.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:N/A:N"
+          },
+          "range": ">=0.8.1 <0.28.0"
+        },
+        {
+          "source": 1103617,
+          "name": "axios",
+          "dependency": "axios",
+          "title": "axios Requests Vulnerable To Possible SSRF and Credential Leakage via Absolute URL",
+          "url": "https://github.com/advisories/GHSA-jr5f-v2jv-69x6",
+          "severity": "high",
+          "cwe": [
+            "CWE-918"
+          ],
+          "cvss": {
+            "score": 0,
+            "vectorString": null
+          },
+          "range": "<0.30.0"
+        }
+      ],
+      "effects": [
+        "@n8n/client-oauth2",
+        "n8n-core"
+      ],
+      "range": "<=0.29.0",
+      "nodes": [
+        "node_modules/axios"
+      ],
+      "fixAvailable": true
+    },
+    "form-data": {
+      "name": "form-data",
+      "severity": "critical",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1106507,
+          "name": "form-data",
+          "dependency": "form-data",
+          "title": "form-data uses unsafe random function in form-data for choosing boundary",
+          "url": "https://github.com/advisories/GHSA-fjxv-7rqg-78g4",
+          "severity": "critical",
+          "cwe": [
+            "CWE-330"
+          ],
+          "cvss": {
+            "score": 0,
+            "vectorString": null
+          },
+          "range": ">=4.0.0 <4.0.4"
+        }
+      ],
+      "effects": [
+        "n8n-workflow"
+      ],
+      "range": "4.0.0 - 4.0.3",
+      "nodes": [
+        "node_modules/n8n-workflow/node_modules/form-data"
+      ],
+      "fixAvailable": {
+        "name": "n8n-workflow",
+        "version": "1.17.0",
+        "isSemVerMajor": true
+      }
+    },
+    "imap": {
+      "name": "imap",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "utf7"
+      ],
+      "effects": [
+        "imap-simple"
+      ],
+      "range": ">=0.8.18",
+      "nodes": [
+        "node_modules/imap"
+      ],
+      "fixAvailable": true
+    },
+    "imap-simple": {
+      "name": "imap-simple",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "imap"
+      ],
+      "effects": [
+        "n8n-nodes-base"
+      ],
+      "range": ">=2.0.0",
+      "nodes": [
+        "node_modules/imap-simple"
+      ],
+      "fixAvailable": true
+    },
+    "mssql": {
+      "name": "mssql",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "tedious"
+      ],
+      "effects": [
+        "n8n-nodes-base"
+      ],
+      "range": "7.2.1 - 10.0.4",
+      "nodes": [
+        "node_modules/mssql"
+      ],
+      "fixAvailable": true
+    },
+    "mysql2": {
+      "name": "mysql2",
+      "severity": "critical",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1096970,
+          "name": "mysql2",
+          "dependency": "mysql2",
+          "title": "mysql2 Remote Code Execution (RCE) via the readCodeFor function",
+          "url": "https://github.com/advisories/GHSA-fpw7-j2hg-69v5",
+          "severity": "critical",
+          "cwe": [
+            "CWE-94"
+          ],
+          "cvss": {
+            "score": 9.8,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"
+          },
+          "range": "<3.9.4"
+        },
+        {
+          "source": 1097180,
+          "name": "mysql2",
+          "dependency": "mysql2",
+          "title": "MySQL2 for Node Arbitrary Code Injection",
+          "url": "https://github.com/advisories/GHSA-4rch-2fh8-94vw",
+          "severity": "critical",
+          "cwe": [
+            "CWE-94"
+          ],
+          "cvss": {
+            "score": 9.8,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"
+          },
+          "range": "<3.9.7"
+        },
+        {
+          "source": 1097488,
+          "name": "mysql2",
+          "dependency": "mysql2",
+          "title": "mysql2 vulnerable to Prototype Pollution",
+          "url": "https://github.com/advisories/GHSA-pmh2-wpjm-fj45",
+          "severity": "high",
+          "cwe": [
+            "CWE-1321"
+          ],
+          "cvss": {
+            "score": 8.2,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:L"
+          },
+          "range": "<3.9.8"
+        },
+        {
+          "source": 1098367,
+          "name": "mysql2",
+          "dependency": "mysql2",
+          "title": "mysql2 cache poisoning vulnerability",
+          "url": "https://github.com/advisories/GHSA-mqr2-w7wj-jjgr",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-20"
+          ],
+          "cvss": {
+            "score": 6.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:L"
+          },
+          "range": "<3.9.3"
+        },
+        {
+          "source": 1098617,
+          "name": "mysql2",
+          "dependency": "mysql2",
+          "title": "mysql2 vulnerable to Prototype Poisoning",
+          "url": "https://github.com/advisories/GHSA-49j4-86m8-q2jw",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-1321"
+          ],
+          "cvss": {
+            "score": 6.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:L"
+          },
+          "range": "<3.9.4"
+        }
+      ],
+      "effects": [
+        "n8n-nodes-base"
+      ],
+      "range": "<=3.9.7",
+      "nodes": [
+        "node_modules/mysql2"
+      ],
+      "fixAvailable": true
+    },
+    "n8n-core": {
+      "name": "n8n-core",
+      "severity": "critical",
+      "isDirect": true,
+      "via": [
+        "@n8n/client-oauth2",
+        "axios",
+        "n8n-nodes-base"
+      ],
+      "effects": [],
+      "range": "0.84.0 - 1.38.1",
+      "nodes": [
+        "node_modules/n8n-core"
+      ],
+      "fixAvailable": true
+    },
+    "n8n-nodes-base": {
+      "name": "n8n-nodes-base",
+      "severity": "critical",
+      "isDirect": false,
+      "via": [
+        "imap-simple",
+        "mssql",
+        "mysql2",
+        "pdfjs-dist",
+        "pg-promise",
+        "xlsx"
+      ],
+      "effects": [
+        "n8n-core"
+      ],
+      "range": "*",
+      "nodes": [
+        "node_modules/n8n-nodes-base"
+      ],
+      "fixAvailable": true
+    },
+    "n8n-workflow": {
+      "name": "n8n-workflow",
+      "severity": "critical",
+      "isDirect": true,
+      "via": [
+        "form-data"
+      ],
+      "effects": [],
+      "range": ">=1.17.1",
+      "nodes": [
+        "node_modules/n8n-workflow"
+      ],
+      "fixAvailable": {
+        "name": "n8n-workflow",
+        "version": "1.17.0",
+        "isSemVerMajor": true
+      }
+    },
+    "pdfjs-dist": {
+      "name": "pdfjs-dist",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1104044,
+          "name": "pdfjs-dist",
+          "dependency": "pdfjs-dist",
+          "title": "PDF.js vulnerable to arbitrary JavaScript execution upon opening a malicious PDF",
+          "url": "https://github.com/advisories/GHSA-wgrm-67xf-hhpq",
+          "severity": "high",
+          "cwe": [
+            "CWE-754"
+          ],
+          "cvss": {
+            "score": 8.8,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H"
+          },
+          "range": "<=4.1.392"
+        }
+      ],
+      "effects": [
+        "n8n-nodes-base"
+      ],
+      "range": "<=4.1.392",
+      "nodes": [
+        "node_modules/pdfjs-dist"
+      ],
+      "fixAvailable": true
+    },
+    "pg-promise": {
+      "name": "pg-promise",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1105601,
+          "name": "pg-promise",
+          "dependency": "pg-promise",
+          "title": "pg-promise SQL Injection vulnerability",
+          "url": "https://github.com/advisories/GHSA-ff9h-848c-4xfj",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-89"
+          ],
+          "cvss": {
+            "score": 5.4,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:L/I:L/A:N"
+          },
+          "range": "<11.5.5"
+        }
+      ],
+      "effects": [
+        "n8n-nodes-base"
+      ],
+      "range": "<11.5.5",
+      "nodes": [
+        "node_modules/pg-promise"
+      ],
+      "fixAvailable": true
+    },
+    "semver": {
+      "name": "semver",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1101089,
+          "name": "semver",
+          "dependency": "semver",
+          "title": "semver vulnerable to Regular Expression Denial of Service",
+          "url": "https://github.com/advisories/GHSA-c2qf-rxjj-qqgw",
+          "severity": "high",
+          "cwe": [
+            "CWE-1333"
+          ],
+          "cvss": {
+            "score": 7.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+          },
+          "range": "<5.7.2"
+        }
+      ],
+      "effects": [
+        "utf7"
+      ],
+      "range": "<5.7.2",
+      "nodes": [
+        "node_modules/utf7/node_modules/semver"
+      ],
+      "fixAvailable": true
+    },
+    "snowflake-sdk": {
+      "name": "snowflake-sdk",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1102097,
+          "name": "snowflake-sdk",
+          "dependency": "snowflake-sdk",
+          "title": "snowflake-sdk may incorrectly validate temporary credential cache file permissions",
+          "url": "https://github.com/advisories/GHSA-xfhv-wqj6-rx99",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-281"
+          ],
+          "cvss": {
+            "score": 4.4,
+            "vectorString": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:N"
+          },
+          "range": ">=1.12.0 <=2.0.1"
+        },
+        {
+          "source": 1104100,
+          "name": "snowflake-sdk",
+          "dependency": "snowflake-sdk",
+          "title": "NodeJS Driver for Snowflake has race condition when checking access to Easy Logging configuration file",
+          "url": "https://github.com/advisories/GHSA-wmjq-jrm2-9wfr",
+          "severity": "low",
+          "cwe": [
+            "CWE-367"
+          ],
+          "cvss": {
+            "score": 3.3,
+            "vectorString": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:N/A:N"
+          },
+          "range": ">=1.10.0 <=2.0.3"
+        }
+      ],
+      "effects": [],
+      "range": "1.10.0 - 2.0.3",
+      "nodes": [
+        "node_modules/snowflake-sdk"
+      ],
+      "fixAvailable": true
+    },
+    "tedious": {
+      "name": "tedious",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "@azure/identity"
+      ],
+      "effects": [
+        "mssql"
+      ],
+      "range": "11.0.9 - 18.2.0",
+      "nodes": [
+        "node_modules/tedious"
+      ],
+      "fixAvailable": true
+    },
+    "utf7": {
+      "name": "utf7",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "semver"
+      ],
+      "effects": [
+        "imap"
+      ],
+      "range": ">=1.0.2",
+      "nodes": [
+        "node_modules/utf7"
+      ],
+      "fixAvailable": true
+    },
+    "xlsx": {
+      "name": "xlsx",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1096911,
+          "name": "xlsx",
+          "dependency": "xlsx",
+          "title": "SheetJS Regular Expression Denial of Service (ReDoS)",
+          "url": "https://github.com/advisories/GHSA-5pgg-2g8v-p4x9",
+          "severity": "high",
+          "cwe": [
+            "CWE-1333"
+          ],
+          "cvss": {
+            "score": 7.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+          },
+          "range": "<0.20.2"
+        }
+      ],
+      "effects": [
+        "n8n-nodes-base"
+      ],
+      "range": "*",
+      "nodes": [
+        "node_modules/xlsx"
+      ],
+      "fixAvailable": true
+    }
+  },
+  "metadata": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 5,
+      "high": 8,
+      "critical": 5,
+      "total": 18
+    },
+    "dependencies": {
+      "prod": 2,
+      "dev": 801,
+      "optional": 0,
+      "peer": 616,
+      "peerOptional": 0,
+      "total": 802
+    }
+  }
+}
