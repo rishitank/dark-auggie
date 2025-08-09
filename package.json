@@ -48,15 +48,5 @@
     "n8n-core": "^1.14.1",
     "n8n-workflow": "^1.82.0",
     "typescript": "^5.9.2"
-  },
-  "overrides": {
-    "form-data@4": [
-      [
-        null,
-        null,
-        null,
-        "form-data@5.0.0"
-      ]
-    ]
   }
 }
