@@ -7,8 +7,8 @@ import type {
   INodeExecutionData,
   INodeType,
   INodeTypeDescription,
+  NodeConnectionType,
 } from 'n8n-workflow';
-import { NodeConnectionType } from 'n8n-workflow';
 
 const pExecFile = promisify(execFile);
 
@@ -24,8 +24,9 @@ export class DarkAuggie implements INodeType {
     defaults: {
       name: 'Dark Auggie',
     },
-    inputs: [NodeConnectionType.Main],
-    outputs: [NodeConnectionType.Main],
+    // Use string literal to avoid runtime import issues across n8n versions
+    inputs: ['main' as any],
+    outputs: ['main' as any],
     credentials: [
       {
         name: 'augmentApi',

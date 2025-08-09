@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" fill="none">
+  <title>Dark Auggie v3 — Core Glow (Final candidate)</title>
+  <defs>
+    <linearGradient id="v3g_bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0B0B0B"/>
+      <stop offset="1" stop-color="#1C1917"/>
+    </linearGradient>
+    <linearGradient id="v3g_core" x1="128" y1="60" x2="128" y2="196">
+      <stop offset="0" stop-color="#3D855E"/>
+      <stop offset="1" stop-color="#2F6A4A"/>
+    </linearGradient>
+    <filter id="v3f_glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background plate -->
+  <rect x="8" y="8" width="240" height="240" rx="24" fill="url(#v3g_bg)"/>
+  <rect x="8" y="8" width="240" height="240" rx="24" stroke="#0F0F10" stroke-width="2"/>
+
+  <!-- Sith A silhouette -->
+  <path d="M128 36 L206 200 H176 L156 160 H100 L80 200 H50 L128 36 Z" fill="#0E0E0E" stroke="#222" stroke-width="1.5"/>
+
+  <!-- Inner mask lines -->
+  <path d="M128 52 L172 146 H152 L128 98 L104 146 H84 L128 52 Z" fill="#121212"/>
+
+  <!-- Augment green core with glow -->
+  <path d="M124 70 L132 70 L132 198 C132 203 128 208 128 208 C128 208 124 203 124 198 Z" fill="url(#v3g_core)" filter="url(#v3f_glow)"/>
+
+  <!-- Tiny star field -->
+  <circle cx="44" cy="44" r="1.2" fill="#3D855E" opacity="0.8"/>
+  <circle cx="220" cy="52" r="1" fill="#3D855E" opacity="0.65"/>
+  <circle cx="212" cy="212" r="1.1" fill="#3D855E" opacity="0.5"/>
+</svg>
+
