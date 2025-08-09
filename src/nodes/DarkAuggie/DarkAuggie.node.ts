@@ -25,8 +25,8 @@ export class DarkAuggie implements INodeType {
       name: 'Dark Auggie',
     },
     // Use string literal to avoid runtime import issues across n8n versions
-    inputs: ['main' as any],
-    outputs: ['main' as any],
+    inputs: ['main' as NodeConnectionType],
+    outputs: ['main' as NodeConnectionType],
     credentials: [
       {
         name: 'augmentApi',

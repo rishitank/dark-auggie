@@ -3,6 +3,8 @@ dist/
 .DS_Store
 .nyc_output/
 coverage/
+logs/
+
 .env
 *.log
 

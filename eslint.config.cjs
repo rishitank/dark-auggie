@@ -1,4 +1,6 @@
 const tseslint = require('@typescript-eslint/eslint-plugin');
+// TODO: replace with eslint.config.ts per PR review
+
 const tsParser = require('@typescript-eslint/parser');
 
 module.exports = [
