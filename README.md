@@ -114,3 +114,52 @@ Env injection
 
 The Dark Auggie icon is a Sith-helmed "A" with an Augment-green energy core — a minimalist homage to both Augment Code and the Dark Side. See src/nodes/DarkAuggie/dark-auggie.svg.
 
+
+## Automated Releases and Conventional Changelog
+
+This project uses semantic-release to automatically:
+- Analyze commits (Conventional Commits) to determine the next version
+- Generate/update CHANGELOG.md
+- Create a GitHub Release with release notes
+- Optionally publish to npm and update its dist-tag (only if explicitly enabled)
+
+### How it works
+- On push to main or master, the "Release" GitHub Action builds the package and runs semantic-release using .releaserc.cjs.
+- On pull requests, the "Release (dry-run)" workflow shows what would be released without creating tags, releases, or changing files.
+
+### Enable npm publishing (optional)
+By default, publishing to npm is disabled. To enable it:
+1) Add a repository variable: PUBLISH_NPM=true
+2) Add a repository secret: NPM_TOKEN with an npm automation token that has publish rights
+
+When both are present, the @semantic-release/npm plugin will publish and update the package's dist-tag accordingly.
+
+### Conventional Commits
+Commit messages must follow Conventional Commits so semantic-release can calculate version bumps.
+
+Basic format:
+- type(optional scope)!: short description
+- (blank line)
+- optional detailed body
+- (blank line)
+- optional footer; Breaking changes can also be noted as "BREAKING CHANGE: ..."
+
+Common types:
+- feat: a new feature (triggers a minor release)
+- fix: a bug fix (triggers a patch release)
+- perf, refactor, docs, test, build, ci, chore: do not trigger a release unless marked as breaking
+- Use ! after the type/scope to indicate a breaking change (triggers a major release)
+
+Examples:
+- feat: add support for inline MCP config
+- fix(DarkAuggie): handle empty stdin without error
+- refactor!: drop Node 18 support in favor of Node 24
+
+### Local dry-run (optional)
+You can preview the next release locally:
+
+- npx semantic-release --no-ci --dry-run
+
+### Notes
+- Do not manually edit the version in package.json; semantic-release manages versioning via git tags.
+- The CHANGELOG.md file is updated automatically on release and committed back to the repo.

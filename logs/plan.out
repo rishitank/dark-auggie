@@ -1,566 +1,161 @@
 🤖
-I'll start by quickly inspecting the repository root to see if a Node project (package.json) already exists and understand the current structure. This will let me plan the setup precisely.
+I'll quickly scan the repository to see if it already has Node/JS tooling (like package.json) and any existing GitHub Actions or release configs. This helps me tailor the semantic-release setup to your stack and avoid conflicts.
 
 
-[90m🔧 Tool call: view[0m
-   type: "directory"
-   path: "."
+[90m🔧 Tool call: codebase-retrieval[0m
+   information_request: "Identify if this repo uses Node.js: locate package.json, pnpm-lock.yaml, yarn.lock, or package-lock.json; list existing .github/workflows; check if a semantic-release config (.releaserc, release.config.js) already exists; and find any CHANGELOG.md file."
 
-[90m📋 Tool result: view[0m
-Here's the files and directories up to 2 levels deep in ., excluding hidden items:
-./LICENSE
-./README.md
-./commitlint.config.cjs
-./dist
-./examples
-./jest.config.ts
-./logs
-./node_modules
-./package-lock.json
-./package.json
-./src
-./tests
-./tsconfig.json
-./dist/credentials
-... (67 more lines)
-🤖
-I'll open the key config files (package.json, Jest and Commitlint configs, and an existing test) to see what's already set up and what needs to be added or updated. This helps avoid duplicating or breaking existing tooling.
-
-
-[90m🔧 Tool call: view[0m
-   type: "file"
-   path: "package.json"
-
-[90m📋 Tool result: view[0m
-Here's the result of running `cat -n` on package.json:
-     1	{
-     2	  "name": "@tankster-ai/n8n-nodes-dark-auggie",
-     3	  "version": "0.1.0",
-     4	  "description": "Dark Auggie: n8n community node wrapping the Augment Code Auggie CLI for automated AI workflows.",
-     5	  "license": "MIT",
-     6	  "type": "module",
-     7	  "engines": {
-     8	    "node": ">=24.5.0"
-     9	  },
-    10	  "exports": {
-    11	    ".": "./dist/index.js"
-    12	  },
-    13	  "main": "dist/index.js",
-    14	  "types": "dist/index.d.ts",
-... (77 more lines)
-🤖
-I'll open the relevant config and test files to assess current setup and identify gaps or incompatibilities (e.g., Jest config, commitlint, tsconfig, and a sample test).
-
-
-[90m🔧 Tool call: view[0m
-   type: "file"
-   path: "jest.config.ts"
-
-[90m📋 Tool result: view[0m
-Here's the result of running `cat -n` on jest.config.ts:
-     1	import type { Config } from 'jest';
-     2	
-     3	const config: Config = {
-     4	  testEnvironment: 'node',
-     5	  extensionsToTreatAsEsm: ['.ts'],
-     6	  transform: {
-     7	    '^.+\\.(ts)$': [
-     8	      'ts-jest',
-     9	      {
-    10	        useESM: true,
-    11	        tsconfig: 'tsconfig.json',
-    12	      },
-    13	    ],
-    14	  },
-... (14 more lines)
-🤖
-I'll open commitlint config and the existing test files to check their content and ensure they align with the requested tooling.
-
-
-[90m🔧 Tool call: view[0m
-   type: "file"
-   path: "commitlint.config.cjs"
-
-[90m📋 Tool result: view[0m
-Here's the result of running `cat -n` on commitlint.config.cjs:
-     1	module.exports = {
-     2	  extends: ['@commitlint/config-conventional'],
-     3	};
-     4	
-     5	
-Total lines in file: 5
-
-
-[90m🔧 Tool call: view[0m
-   type: "file"
-   path: "tests/math.test.ts"
-
-[90m📋 Tool result: view[0m
-Here's the result of running `cat -n` on tests/math.test.ts:
-     1	import { add } from '../src/utils/math';
-     2	
-     3	describe('math.add', () => {
-     4	  it('adds two numbers', () => {
-     5	    expect(add(2, 3)).toBe(5);
-     6	  });
-     7	});
-     8	
-     9	
-Total lines in file: 9
-
-
-[90m🔧 Tool call: view[0m
-   type: "directory"
-   path: "src/utils"
-
-[90m📋 Tool result: view[0m
-Here's the files and directories up to 2 levels deep in src/utils, excluding hidden items:
-src/utils/math.ts
-
-
-[90m🔧 Tool call: view[0m
-   type: "file"
-   path: "src/utils/math.ts"
-
-[90m📋 Tool result: view[0m
-Here's the result of running `cat -n` on src/utils/math.ts:
-     1	export function add(a: number, b: number): number {
-     2	  return a + b;
-     3	}
-     4	
-     5	
-Total lines in file: 5
-
-🤖
-I'll check whether a .husky directory already exists to decide whether I need to create hook files and the helper script reference.
-
-
-[90m🔧 Tool call: view[0m
-   type: "directory"
-   path: ".husky"
-
-[90m📋 Tool result: view[0m
-Here's the files and directories up to 2 levels deep in .husky, excluding hidden items:
-.husky/_
-.husky/commit-msg
-.husky/pre-commit
-.husky/pre-push
-.husky/_/applypatch-msg
-.husky/_/commit-msg
-.husky/_/h
-.husky/_/husky.sh
-.husky/_/post-applypatch
-.husky/_/post-checkout
-.husky/_/post-commit
-.husky/_/post-merge
-.husky/_/post-rewrite
-.husky/_/pre-applypatch
-... (7 more lines)
-🤖
-I'll open the existing Husky hook scripts to ensure they run the right commands (lint-staged, commitlint, tests) and adjust if needed.
-
-
-[90m🔧 Tool call: view[0m
-   type: "file"
-   path: ".husky/pre-commit"
-
-[90m📋 Tool result: view[0m
-Here's the result of running `cat -n` on .husky/pre-commit:
-     1	#!/bin/sh
-     2	. "$(dirname "$0")/_/husky.sh"
-     3	
-     4	# Lint-staged handles staged files
-     5	npx lint-staged
-     6	
-     7	# Type check
-     8	npm run typecheck
-     9	
-    10	
-Total lines in file: 10
-
-
-[90m🔧 Tool call: view[0m
-   type: "file"
-   path: ".husky/commit-msg"
-
-[90m📋 Tool result: view[0m
-Here's the result of running `cat -n` on .husky/commit-msg:
-     1	#!/bin/sh
-     2	. "$(dirname "$0")/_/husky.sh"
-     3	
-     4	npx --no -- commitlint --edit "$1"
-     5	
-     6	
-Total lines in file: 6
-
-
-[90m🔧 Tool call: view[0m
-   type: "file"
-   path: ".husky/pre-push"
-
-[90m📋 Tool result: view[0m
-Here's the result of running `cat -n` on .husky/pre-push:
-     1	#!/bin/sh
-     2	. "$(dirname "$0")/_/husky.sh"
-     3	
-     4	# Run tests before pushing
-     5	npm run test:ci
-     6	
-     7	
-Total lines in file: 7
-
-🤖
-I'll quickly peek at tsconfig.json to ensure it aligns with the Node ESM setup and Jest.
-
-
-[90m🔧 Tool call: view[0m
-   type: "file"
-   path: "tsconfig.json"
-
-[90m📋 Tool result: view[0m
-Here's the result of running `cat -n` on tsconfig.json:
-     1	{
-     2	  "compilerOptions": {
-     3	    "target": "ES2020",
-     4	    "lib": ["ES2020"],
-     5	    "module": "CommonJS",
-     6	    "moduleResolution": "Node",
-     7	    "outDir": "dist",
-     8	    "rootDir": "src",
-     9	    "declaration": true,
-    10	    "sourceMap": true,
-    11	    "strict": true,
-    12	    "esModuleInterop": true,
-    13	    "forceConsistentCasingInFileNames": true,
-    14	    "skipLibCheck": true,
-... (8 more lines)
-🤖
-Planned changes:
-- Add ESLint v9 flat config (eslint.config.js) with TypeScript support and sensible rules
-- Add Prettier config and ignore files
-- Add GitHub Actions CI workflow to run lint, typecheck, format:check, and tests
-- Verify by running lint and tests
-
-I'll create the new config files now.
-
-
-[90m🔧 Tool call: save-file[0m
-   instructions_reminder: "LIMIT THE FILE CONTENT TO AT MOST 300 LINES. IF MORE CONTENT NEEDS TO BE ADDED USE THE str-replace-editor TOOL TO EDIT THE FILE AFTER IT HAS BEEN CREATED."
-   path: "eslint.config.js"
-   file_content: "import tsParser from '@typescript-eslint/parser';
-   import tsPlugin from '@typescript-eslint/eslint-plugin';
-   
-   /** @type {import('eslint').Linter.FlatConfig[]} */
-   export default [
-     // Ignore generated and vendor folders
-     { ignores: ['dist/**', 'node_modules/**', 'coverage/**', 'logs/**'] },
-   
-     // TypeScript source files
-     {
-       files: ['**/*.ts'],
-       languageOptions: {
-         parser: tsParser,
-... (35 more lines)
-
-[90m📋 Tool result: save-file[0m
-File saved.  Saved file {eslint.config.js}
-🤖
-Planned validation: run lint, format:check, typecheck, and tests to ensure the setup works end-to-end.
-
-
-[90m🔧 Tool call: launch-process[0m
-   command: "npm run lint"
-   wait: true
-   max_wait_seconds: 600
-   cwd: "/Users/rishitank/github/dark-auggie-worktrees/tooling-setup"
-
-[90m📋 Tool result: launch-process[0m
-❌ Error:
-  Command failed with exit code 127
-
-📤 Output:
-/Users/rishitank/.bashrc: line 143: brew: command not found
-/Users/rishitank/acd_func.sh: line 61: bind: warning: line editing not enabled
-/Users/rishitank/.fzf.bash: line 13: /usr/local/opt/fzf/shell/key-bindings.bash: No such file or directory
-env: node: No such file or directory
-🤖
-I'll quickly open dist/index.js to verify the emitted module format versus package type, to avoid breaking the build and tests.
-
-
-[90m🔧 Tool call: view[0m
-   type: "file"
-   path: "dist/index.js"
-
-[90m📋 Tool result: view[0m
-Here's the result of running `cat -n` on dist/index.js:
-     1	"use strict";
-     2	Object.defineProperty(exports, "__esModule", { value: true });
-     3	//# sourceMappingURL=index.js.map
-Total lines in file: 3
-
-
-[90m🔧 Tool call: view[0m
-   type: "file"
-   path: "src/index.ts"
-
-[90m📋 Tool result: view[0m
-Here's the result of running `cat -n` on src/index.ts:
-     1	export {};
-     2	
-     3	
-Total lines in file: 3
-
-🤖
-Planned file changes:
-- Update eslint.config.js to include eslint-config-prettier flat config
-- Add .prettierrc.json and .prettierignore
-- Add GitHub Actions workflow at .github/workflows/ci.yml to run lint, typecheck, format:check, build, and tests
-
-Proceeding to apply these changes.
-
-
-[90m🔧 Tool call: str-replace-editor[0m
-[36m📝 eslint.config.js (lines 2-1 → line 3)[0m
-[32m+import prettier from 'eslint-config-prettier';[0m
-[36m📝 eslint.config.js (lines 45-44 → lines 47-49)[0m
-[32m+[0m
-[32m+  // Turn off rules that might conflict with Prettier[0m
-[32m+  prettier,[0m
-
-[90m📋 Tool result: str-replace-editor[0m
-Successfully edited the file eslint.config.js.
-Result for str_replace for entry with index [1]:
-Replacement successful.
-new_str starts at line 1 and ends at line 51.
-
-Review the changes and make sure they are as expected (correct indentation, no duplicate lines, etc).
-Edit the file again if necessary.
-
-
-[90m🔧 Tool call: save-file[0m
-   instructions_reminder: "LIMIT THE FILE CONTENT TO AT MOST 300 LINES. IF MORE CONTENT NEEDS TO BE ADDED USE THE str-replace-editor TOOL TO EDIT THE FILE AFTER IT HAS BEEN CREATED."
-   path: ".prettierrc.json"
-   file_content: "{
-     "$schema": "https://json.schemastore.org/prettierrc",
-     "semi": true,
-     "singleQuote": true,
-     "trailingComma": "all",
-     "printWidth": 100
-   }
-   "
-   add_last_line_newline: true
-
-[90m📋 Tool result: save-file[0m
-❌ Error:
-File already exists: /Users/rishitank/github/dark-auggie-worktrees/tooling-setup/.prettierrc.json
-
-[90m🔧 Tool call: view[0m
-   type: "file"
-   path: ".prettierrc.json"
-
-[90m📋 Tool result: view[0m
-Here's the result of running `cat -n` on .prettierrc.json:
-     1	{
-     2	  "semi": true,
-     3	  "singleQuote": true,
-     4	  "trailingComma": "all",
-     5	  "printWidth": 100
-     6	}
-     7	
-     8	
-Total lines in file: 8
-
-
-[90m🔧 Tool call: save-file[0m
-   instructions_reminder: "LIMIT THE FILE CONTENT TO AT MOST 300 LINES. IF MORE CONTENT NEEDS TO BE ADDED USE THE str-replace-editor TOOL TO EDIT THE FILE AFTER IT HAS BEEN CREATED."
-   path: ".prettierignore"
-   file_content: "dist
-   node_modules
-   coverage
-   logs
-   "
-   add_last_line_newline: true
-
-[90m📋 Tool result: save-file[0m
-❌ Error:
-File already exists: /Users/rishitank/github/dark-auggie-worktrees/tooling-setup/.prettierignore
-
-[90m🔧 Tool call: view[0m
-   type: "file"
-   path: ".prettierignore"
-
-[90m📋 Tool result: view[0m
-Here's the result of running `cat -n` on .prettierignore:
-     1	dist
-     2	coverage
-     3	node_modules
-     4	
-     5	
-Total lines in file: 5
-
-
-[90m🔧 Tool call: view[0m
-   type: "directory"
-   path: ".github"
-
-[90m📋 Tool result: view[0m
-Here's the files and directories up to 2 levels deep in .github, excluding hidden items:
-.github/workflows
-.github/workflows/ci.yml
-
-
-[90m🔧 Tool call: view[0m
-   type: "file"
-   path: ".github/workflows/ci.yml"
-
-[90m📋 Tool result: view[0m
-Here's the result of running `cat -n` on .github/workflows/ci.yml:
-     1	name: CI
+[90m📋 Tool result: codebase-retrieval[0m
+The following code sections were retrieved:
+Path: .github/workflows/release-dry-run.yml
+     1	name: Release (dry-run)
      2	
      3	on:
      4	  pull_request:
-     5	    branches: ["**"]
-     6	
-     7	jobs:
-     8	  build:
-     9	    runs-on: ubuntu-latest
-    10	    steps:
-    11	      - name: Checkout
-    12	        uses: actions/checkout@v4
-    13	
-    14	      - name: Setup Node.js
-... (20 more lines)
-
-[90m🔧 Tool call: str-replace-editor[0m
-[36m📝 .github/workflows/ci.yml (line 17 → line 17)[0m
-[31m-          node-version: 'lts/*'[0m
-[32m+          node-version: '24.x'[0m
-[36m📝 .github/workflows/ci.yml (lines 25-24 → lines 26-28)[0m
-[32m+      - name: Format check[0m
-[32m+        run: npm run format:check[0m
-[32m+[0m
-[36m📝 .github/workflows/ci.yml (lines 28-27 → lines 32-34)[0m
-[32m+      - name: Build[0m
-[32m+        run: npm run build[0m
-[32m+[0m
-
-[90m📋 Tool result: str-replace-editor[0m
-Successfully edited the file .github/workflows/ci.yml.
-Result for str_replace for entry with index [1]:
-Replacement successful.
-new_str starts at line 1 and ends at line 37.
-
-Review the changes and make sure they are as expected (correct indentation, no duplicate lines, etc).
-Edit the file again if necessary.
-
+     5	    branches:
+     6	      - main
+     7	      - master
+     8	  workflow_dispatch:
+     9	
+    10	jobs:
+    11	  release-dry-run:
+    12	    name: semantic-release dry-run
+    13	    runs-on: ubuntu-latest
+... (535 more lines)
 🤖
-## Plan and current status
+## Summary
 
-I reviewed your repository and found most of the requested tooling already present. I completed the missing pieces and tightened CI:
+I audited your repo and you’re already set up end-to-end:
+- semantic-release configured for Conventional Commits
+- Dry-run GitHub Action on PRs
+- Full release workflow on main/master
+- Changelog and GitHub Release notes generation
+- Clear enablement steps documented in README
 
-- ESLint v9 flat config: added eslint.config.js (with TypeScript and Prettier compatibility)
-- Prettier: existing config/ignore confirmed
-- Husky + lint-staged: hooks and config already present
-- Commitlint + Commitizen: config and scripts already present
-- Jest: config and a minimal test already present
-- CI workflow: extended to also run format:check and build; pinned Node 24.x
+No code changes needed. Below is a concise rundown and how to enable/use it.
 
-Note: I attempted to run local validation, but the environment didn’t have Node available, so I couldn’t verify locally. CI will validate when you push.
+## What’s in place
 
-## What I changed
-
-- Added ESLint v9 flat config with TypeScript and Prettier integration
-- Updated GitHub Actions workflow to:
-  - Use Node 24.x (matches package.json engines)
-  - Add format:check and build steps
-
-## Highlights (small excerpts)
-
-- ESLint flat config (TypeScript + Prettier)
-````js path=eslint.config.js mode=EXCERPT
-import tsParser from '@typescript-eslint/parser';
-import tsPlugin from '@typescript-eslint/eslint-plugin';
-import prettier from 'eslint-config-prettier';
-
-export default [
-  { ignores: ['dist/**', 'node_modules/**', 'coverage/**', 'logs/**'] },
-  { files: ['**/*.ts'], languageOptions: { parser: tsParser, parserOptions: { project: false, sourceType: 'module', ecmaVersion: 'latest' } },
+### semantic-release config
+````js path=.releaserc.cjs mode=EXCERPT
+module.exports = {
+  branches: ["main", "master"],
+  plugins: [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    ["@semantic-release/changelog",{ changelogFile: "CHANGELOG.md" }],
+    ["@semantic-release/git",{ assets: ["CHANGELOG.md"] }],
+    "@semantic-release/github",
+  ].concat(process.env.PUBLISH_NPM==="true"&&process.env.NPM_TOKEN?[["@semantic-release/npm",{ npmPublish: true }]]:[]),
+};
 ````
 
-- CI: Node 24.x, format check, build
-````yaml path=.github/workflows/ci.yml mode=EXCERPT
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '24.x'
-          cache: 'npm'
-      - name: Format check
-        run: npm run format:check
+- Commit analysis via Conventional Commits
+- Release notes generator
+- Changelog updated and committed back
+- GitHub release creation
+- Optional npm publish when explicitly enabled
+
+### Dry-run workflow (PRs/manual)
+````yaml path=.github/workflows/release-dry-run.yml mode=EXCERPT
+on:
+  pull_request: { branches: [main, master] }
+  workflow_dispatch:
+jobs:
+  release-dry-run:
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+      - run: npm ci && npm run build
+      - uses: cycjimmy/semantic-release-action@v4
+        with: { dry_run: true, extra_plugins: | 
+          @semantic-release/commit-analyzer
+          @semantic-release/release-notes-generator
+          @semantic-release/changelog
+          @semantic-release/git
+          @semantic-release/github
+          @semantic-release/npm }
 ````
 
-- Husky pre-commit (already present)
-````sh path=.husky/pre-commit mode=EXCERPT
-# Lint-staged handles staged files
-npx lint-staged
-
-# Type check
-npm run typecheck
+### Release workflow (main/master)
+````yaml path=.github/workflows/release.yml mode=EXCERPT
+on:
+  push: { branches: [main, master] }
+  workflow_dispatch:
+jobs:
+  release:
+    permissions: { contents: write, issues: write, pull-requests: write }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+      - run: npm ci && npm run build
+      - uses: cycjimmy/semantic-release-action@v4
+        with: { extra_plugins: | 
+          @semantic-release/commit-analyzer
+          @semantic-release/release-notes-generator
+          @semantic-release/changelog
+          @semantic-release/git
+          @semantic-release/github
+          @semantic-release/npm }
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          PUBLISH_NPM: ${{ vars.PUBLISH_NPM }}
 ````
 
-- Jest config (already present)
-````ts path=jest.config.ts mode=EXCERPT
-const config: Config = {
-  testEnvironment: 'node',
-  extensionsToTreatAsEsm: ['.ts'],
-  transform: { '^.+\\.(ts)$': ['ts-jest', { useESM: true, tsconfig: 'tsconfig.json' }] },
+### Changelog
+````md path=CHANGELOG.md mode=EXCERPT
+# Changelog
+
+All notable changes … managed by the release process.
 ````
 
-- Minimal test (already present)
-````ts path=tests/math.test.ts mode=EXCERPT
-import { add } from '../src/utils/math';
-
-describe('math.add', () => {
-  it('adds two numbers', () => {
+### README enablement docs
+````md path=README.md mode=EXCERPT
+## Automated Releases and Conventional Changelog
+… dry-run on PRs, release on main/master,
+optional npm publish via PUBLISH_NPM + NPM_TOKEN.
 ````
 
-## Scripts you can use
+## How to enable and use
 
-- Lint: npm run lint
-- Fix lint: npm run lint:fix
-- Format: npm run format
-- Format check: npm run format:check
-- Typecheck: npm run typecheck
-- Test: npm test
-- Test watch: npm run test:watch
-- CI tests: npm run test:ci
-- Commit with Commitizen: npm run commit
+1) Conventional Commits
+- Use messages like:
+  - feat: add X
+  - fix(scope): correct Y
+  - refactor!: drop Node 18 support
+- Breaking changes: add ! after type/scope or include a “BREAKING CHANGE:” footer.
 
-## Validation
+2) Dry-run on PRs
+- Open a PR against main/master. The “Release (dry-run)” workflow will:
+  - Compute next version, generate notes, and show what would happen — without tagging or changing files.
 
-- Local runs failed because Node is not available in this environment. Once you push, CI will run lint, format:check, typecheck, build, and tests.
-- Safe suggestion: run locally before pushing:
-  - npm ci
-  - npm run lint && npm run format:check && npm run typecheck && npm run build && npm run test:ci
+3) Real release
+- Merge to main/master. The “Release” workflow will:
+  - Determine version bump from commit history
+  - Update/commit CHANGELOG.md
+  - Create a GitHub Release with notes
+  - Optionally publish to npm (see next step)
 
-## Important follow-ups and questions
+4) Optional: enable npm publishing
+- Add repository variable: PUBLISH_NPM=true
+- Add repository secret: NPM_TOKEN (npm automation token with publish rights)
+- That’s it; @semantic-release/npm will handle versioning and publish.
 
-There are two alignment items worth addressing:
+5) Local preview (optional)
+- Run a local dry-run:
+  - npx semantic-release --no-ci --dry-run
+- Note: For local runs, if you want to avoid npx fetching packages repeatedly or you hit plugin resolution errors, add devDeps locally:
+  - npm i -D semantic-release @semantic-release/{commit-analyzer,release-notes-generator,changelog,git,github,npm}
 
-1) tsconfig.module vs package.json type  
-- package.json sets "type": "module", but tsconfig uses "module": "CommonJS". That compiles .js in dist as CJS while Node treats .js as ESM, leading to runtime import issues for consumers.
-- Recommendation: switch tsconfig to output ESM (for example "module": "ES2020" and consider "moduleResolution": "Bundler" or "NodeNext" as appropriate), or change the build to emit .cjs if you intend to keep CJS. I can make this change if you confirm your target format (ESM vs CJS).
+## Notes and tips
 
-2) Jest 30 + ts-jest compatibility  
-- You currently use jest "^30" and ts-jest "^29". ts-jest 29 is typically paired with Jest 29; compatibility with Jest 30 may be limited.
-- Options:
-  - A) Pin Jest to "^29" (no other changes), or
-  - B) Keep Jest 30 and switch to babel-jest with @babel/preset-typescript, or
-  - C) If there is a ts-jest version that officially supports Jest 30, upgrade to that.
-- Tell me your preferred route and I’ll adjust package.json and config accordingly (using the proper package manager commands).
+- Do not manually edit version in package.json; semantic-release manages versions via git tags.
+- The release workflows set fetch-depth: 0 to ensure full git history for correct analysis.
+- The git plugin commits only CHANGELOG.md back with a release note message including [skip ci] to avoid loops.
+- Branches: Releasing from main or master is enabled. If you want prerelease channels later (e.g., next), we can add them.
 
-Would you like me to:
-- Align TypeScript module output with your ESM package?
-- Align Jest/ts-jest (pick A, B, or C above)?
+## Want stricter enforcement?
 
-Once you confirm, I’ll implement and then run the validations. If you prefer, I can also add a Node matrix in CI (e.g., 20.x, 22.x, 24.x).
+If you’d like guardrails to enforce Conventional Commits before pushing, I can add commitlint + Husky pre-commit/pre-push hooks. Say the word and I’ll wire them up.
 
