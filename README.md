@@ -2,6 +2,33 @@
 
 Dark Auggie is an n8n community node that wraps the Augment Code Auggie CLI to power agentic coding workflows in your automations. It’s designed to be versatile and play well with both built-in and community MCP nodes.
 
+> Unleash agentic coding in your automations. Marry n8n with Augment Code’s Auggie CLI for relentless, Dark‑Side productivity. 🖤⚡
+
+## Why you’ll love it 😍
+- Instant AI power in any workflow (stdin/stdout friendly) ⚙️
+- Works with MCP tools and JSON configs 🧰
+- Safe, configurable, and scriptable (rules, env, workspaces) 🧩
+- Great DX: compact outputs, session control, and binary piping ✨
+
+## 1‑minute quickstart ⏱️
+1) npm ci && npm run build
+2) Install as an n8n Community Node (point to this package; ensure dist/ is present) 📦
+3) Create credentials “Augment Code API” (Session Auth JSON at minimum) 🔑
+4) Drag Dark Auggie into a workflow and try “Quick Print” with Print Mode = Compact 🧪
+
+## Addictive workflows 🚀
+- PR Auto‑Review: feed diffs → get bullet‑proof review notes 📝
+- Log Summarizer: ship huge logs via binary stdin → get root‑cause + remediation 🧯
+- MCP Orchestrator: give it a toolset → it coordinates tasks across services 🤖
+
+## Power features 💪
+- Print | Quiet | Compact modes
+- Interactive step with resume/don’t‑save controls
+- MCP via inline JSON, file, or JSON path
+- Env injection (JSON) and workspace/rules flags
+
+
+
 ## Requirements
 
 - Node v24.5.0+ (see .nvmrc)
