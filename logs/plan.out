@@ -1,0 +1,161 @@
+🤖
+I'll quickly scan the repository to see if it already has Node/JS tooling (like package.json) and any existing GitHub Actions or release configs. This helps me tailor the semantic-release setup to your stack and avoid conflicts.
+
+
+[90m🔧 Tool call: codebase-retrieval[0m
+   information_request: "Identify if this repo uses Node.js: locate package.json, pnpm-lock.yaml, yarn.lock, or package-lock.json; list existing .github/workflows; check if a semantic-release config (.releaserc, release.config.js) already exists; and find any CHANGELOG.md file."
+
+[90m📋 Tool result: codebase-retrieval[0m
+The following code sections were retrieved:
+Path: .github/workflows/release-dry-run.yml
+     1	name: Release (dry-run)
+     2	
+     3	on:
+     4	  pull_request:
+     5	    branches:
+     6	      - main
+     7	      - master
+     8	  workflow_dispatch:
+     9	
+    10	jobs:
+    11	  release-dry-run:
+    12	    name: semantic-release dry-run
+    13	    runs-on: ubuntu-latest
+... (535 more lines)
+🤖
+## Summary
+
+I audited your repo and you’re already set up end-to-end:
+- semantic-release configured for Conventional Commits
+- Dry-run GitHub Action on PRs
+- Full release workflow on main/master
+- Changelog and GitHub Release notes generation
+- Clear enablement steps documented in README
+
+No code changes needed. Below is a concise rundown and how to enable/use it.
+
+## What’s in place
+
+### semantic-release config
+````js path=.releaserc.cjs mode=EXCERPT
+module.exports = {
+  branches: ["main", "master"],
+  plugins: [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    ["@semantic-release/changelog",{ changelogFile: "CHANGELOG.md" }],
+    ["@semantic-release/git",{ assets: ["CHANGELOG.md"] }],
+    "@semantic-release/github",
+  ].concat(process.env.PUBLISH_NPM==="true"&&process.env.NPM_TOKEN?[["@semantic-release/npm",{ npmPublish: true }]]:[]),
+};
+````
+
+- Commit analysis via Conventional Commits
+- Release notes generator
+- Changelog updated and committed back
+- GitHub release creation
+- Optional npm publish when explicitly enabled
+
+### Dry-run workflow (PRs/manual)
+````yaml path=.github/workflows/release-dry-run.yml mode=EXCERPT
+on:
+  pull_request: { branches: [main, master] }
+  workflow_dispatch:
+jobs:
+  release-dry-run:
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+      - run: npm ci && npm run build
+      - uses: cycjimmy/semantic-release-action@v4
+        with: { dry_run: true, extra_plugins: | 
+          @semantic-release/commit-analyzer
+          @semantic-release/release-notes-generator
+          @semantic-release/changelog
+          @semantic-release/git
+          @semantic-release/github
+          @semantic-release/npm }
+````
+
+### Release workflow (main/master)
+````yaml path=.github/workflows/release.yml mode=EXCERPT
+on:
+  push: { branches: [main, master] }
+  workflow_dispatch:
+jobs:
+  release:
+    permissions: { contents: write, issues: write, pull-requests: write }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+      - run: npm ci && npm run build
+      - uses: cycjimmy/semantic-release-action@v4
+        with: { extra_plugins: | 
+          @semantic-release/commit-analyzer
+          @semantic-release/release-notes-generator
+          @semantic-release/changelog
+          @semantic-release/git
+          @semantic-release/github
+          @semantic-release/npm }
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          PUBLISH_NPM: ${{ vars.PUBLISH_NPM }}
+````
+
+### Changelog
+````md path=CHANGELOG.md mode=EXCERPT
+# Changelog
+
+All notable changes … managed by the release process.
+````
+
+### README enablement docs
+````md path=README.md mode=EXCERPT
+## Automated Releases and Conventional Changelog
+… dry-run on PRs, release on main/master,
+optional npm publish via PUBLISH_NPM + NPM_TOKEN.
+````
+
+## How to enable and use
+
+1) Conventional Commits
+- Use messages like:
+  - feat: add X
+  - fix(scope): correct Y
+  - refactor!: drop Node 18 support
+- Breaking changes: add ! after type/scope or include a “BREAKING CHANGE:” footer.
+
+2) Dry-run on PRs
+- Open a PR against main/master. The “Release (dry-run)” workflow will:
+  - Compute next version, generate notes, and show what would happen — without tagging or changing files.
+
+3) Real release
+- Merge to main/master. The “Release” workflow will:
+  - Determine version bump from commit history
+  - Update/commit CHANGELOG.md
+  - Create a GitHub Release with notes
+  - Optionally publish to npm (see next step)
+
+4) Optional: enable npm publishing
+- Add repository variable: PUBLISH_NPM=true
+- Add repository secret: NPM_TOKEN (npm automation token with publish rights)
+- That’s it; @semantic-release/npm will handle versioning and publish.
+
+5) Local preview (optional)
+- Run a local dry-run:
+  - npx semantic-release --no-ci --dry-run
+- Note: For local runs, if you want to avoid npx fetching packages repeatedly or you hit plugin resolution errors, add devDeps locally:
+  - npm i -D semantic-release @semantic-release/{commit-analyzer,release-notes-generator,changelog,git,github,npm}
+
+## Notes and tips
+
+- Do not manually edit version in package.json; semantic-release manages versions via git tags.
+- The release workflows set fetch-depth: 0 to ensure full git history for correct analysis.
+- The git plugin commits only CHANGELOG.md back with a release note message including [skip ci] to avoid loops.
+- Branches: Releasing from main or master is enabled. If you want prerelease channels later (e.g., next), we can add them.
+
+## Want stricter enforcement?
+
+If you’d like guardrails to enforce Conventional Commits before pushing, I can add commitlint + Husky pre-commit/pre-push hooks. Say the word and I’ll wire them up.
+
