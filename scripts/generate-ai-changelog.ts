@@ -135,7 +135,7 @@ Flags:
 async function git(args: string[], opts: Record<string, any> = {}): Promise<string> {
   try {
     const { stdout } = await execFile('git', args, { ...opts });
-    return stdout.toString('utf8').trim();
+    return String(stdout).trim();
   } catch (e) {
     return '';
   }
