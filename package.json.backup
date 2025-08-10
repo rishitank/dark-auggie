@@ -36,33 +36,25 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "clean": "rimraf dist",
-    "prepare": "npm run build",
-    "changelog:ai": "npm run build && node dist/scripts/generate-ai-changelog.js",
-    "changelog:ai:since": "npm run build && node dist/scripts/generate-ai-changelog.js --since '2 weeks ago'"
-  },
-  "lint-staged": {
-    "*.ts": [
-      "eslint --fix",
-      "prettier --write"
-    ]
+    "prepare": "npm run build"
   },
   "dependencies": {
     "@augmentcode/auggie": "^0.2.0"
   },
   "devDependencies": {
-    "@types/jest": "^30.0.0",
     "@types/node": "^24.2.0",
-    "@typescript-eslint/eslint-plugin": "^8.39.0",
-    "@typescript-eslint/parser": "^8.39.0",
-    "eslint": "^9.33.0",
-    "eslint-config-prettier": "^10.1.8",
-    "jest": "^30.0.5",
-    "lint-staged": "^16.1.5",
     "n8n-core": "^1.14.1",
-    "n8n-workflow": "^1.17.0",
+    "n8n-workflow": "^1.82.0",
     "typescript": "^5.9.2"
   },
   "overrides": {
-    "form-data": "^4.0.4"
+    "form-data@4": [
+      [
+        null,
+        null,
+        null,
+        "form-data@5.0.0"
+      ]
+    ]
   }
 }
