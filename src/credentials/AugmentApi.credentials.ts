@@ -12,14 +12,14 @@ export class AugmentApi implements ICredentialType {
       typeOptions: { password: true },
       default: '',
       description: 'Authentication JSON for AUGMENT_SESSION_AUTH',
-      required: true,
+      required: true
     },
     {
       displayName: 'API URL',
       name: 'augmentApiUrl',
       type: 'string',
       default: '',
-      description: 'Optional AUGMENT_API_URL override',
+      description: 'Optional AUGMENT_API_URL override'
     },
     {
       displayName: 'API Token',
@@ -27,7 +27,7 @@ export class AugmentApi implements ICredentialType {
       type: 'string',
       typeOptions: { password: true },
       default: '',
-      description: 'Optional AUGMENT_API_TOKEN to use instead of session auth',
+      description: 'Optional AUGMENT_API_TOKEN to use instead of session auth'
     },
     {
       displayName: 'GitHub Token',
@@ -35,8 +35,7 @@ export class AugmentApi implements ICredentialType {
       type: 'string',
       typeOptions: { password: true },
       default: '',
-      description: 'Optional GITHUB_API_TOKEN for GitHub-integrated actions',
-    },
+      description: 'Optional GITHUB_API_TOKEN for GitHub-integrated actions'
+    }
   ];
 }
-

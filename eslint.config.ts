@@ -3,7 +3,7 @@ import tsParser from '@typescript-eslint/parser';
 
 export default [
   {
-    ignores: ['dist', 'coverage', 'node_modules', 'logs'],
+    ignores: ['dist', 'coverage', 'node_modules', 'logs']
   },
   {
     files: ['**/*.ts'],
@@ -12,11 +12,11 @@ export default [
       ecmaVersion: 2022,
       sourceType: 'module',
       parserOptions: {
-        project: ['./tsconfig.json'],
-      },
+        project: ['./tsconfig.json']
+      }
     },
     plugins: {
-      '@typescript-eslint': tseslint as any,
+      '@typescript-eslint': tseslint as any
     },
     rules: {
       ...tseslint.configs['recommended-type-checked'].rules,
@@ -28,8 +28,7 @@ export default [
       // prefer arrow functions
       'func-style': ['error', 'expression'],
       // stylistic alignment with prettier
-      'no-trailing-spaces': 'error',
-    },
-  },
+      'no-trailing-spaces': 'error'
+    }
+  }
 ];
-

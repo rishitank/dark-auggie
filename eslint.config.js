@@ -16,8 +16,8 @@ export default [
         // Keep lightweight; we don't require project service for linting
         project: false,
         sourceType: 'module',
-        ecmaVersion: 'latest',
-      },
+        ecmaVersion: 'latest'
+      }
     },
     plugins: { '@typescript-eslint': tsPlugin },
     rules: {
@@ -26,7 +26,7 @@ export default [
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': [
         'warn',
-        { argsIgnorePattern: '^_', varsIgnorePattern: '^_', ignoreRestSiblings: true },
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_', ignoreRestSiblings: true }
       ],
       'no-console': 'off',
       eqeqeq: ['error', 'smart'],
@@ -34,14 +34,14 @@ export default [
       // TS-centric quality rules (safe defaults)
       '@typescript-eslint/consistent-type-imports': [
         'warn',
-        { prefer: 'type-imports', fixStyle: 'inline-type-imports' },
+        { prefer: 'type-imports', fixStyle: 'inline-type-imports' }
       ],
       '@typescript-eslint/no-floating-promises': 'off',
       '@typescript-eslint/no-misused-promises': 'off',
-      '@typescript-eslint/ban-ts-comment': ['warn', { 'ts-ignore': 'allow-with-description' }],
-    },
+      '@typescript-eslint/ban-ts-comment': ['warn', { 'ts-ignore': 'allow-with-description' }]
+    }
   },
 
   // Turn off rules that might conflict with Prettier
-  prettier,
+  prettier
 ];
