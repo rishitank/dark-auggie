@@ -36,9 +36,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "clean": "rimraf dist",
-    "prepare": "npm run build",
-    "changelog:ai": "node scripts/generate-ai-changelog.mjs",
-    "changelog:ai:since": "node scripts/generate-ai-changelog.mjs --since '2 weeks ago'"
+    "prepare": "npm run build"
   },
   "dependencies": {
     "@augmentcode/auggie": "^0.2.0"
@@ -46,10 +44,17 @@
   "devDependencies": {
     "@types/node": "^24.2.0",
     "n8n-core": "^1.14.1",
-    "n8n-workflow": "^1.17.0",
+    "n8n-workflow": "^1.82.0",
     "typescript": "^5.9.2"
   },
   "overrides": {
-    "form-data": "^4.0.4"
+    "form-data@4": [
+      [
+        null,
+        null,
+        null,
+        "form-data@5.0.0"
+      ]
+    ]
   }
 }
