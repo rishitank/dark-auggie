@@ -5,26 +5,94 @@
   - Sends a structured summary to Auggie via --print and writes CHANGELOG_AI.md
 
   Usage examples:
-    node scripts/generate-ai-changelog.mjs
-    node scripts/generate-ai-changelog.mjs --from v0.1.0 --to HEAD
-    node scripts/generate-ai-changelog.mjs --since 2025-01-01 --max-commits 100
-    node scripts/generate-ai-changelog.mjs --github-repo owner/repo --output docs/CHANGELOG_AI.md
+    node dist/scripts/generate-ai-changelog.js
+    node dist/scripts/generate-ai-changelog.js --from v0.1.0 --to HEAD
+    node dist/scripts/generate-ai-changelog.js --since 2025-01-01 --max-commits 100
+    node dist/scripts/generate-ai-changelog.js --github-repo owner/repo --output docs/CHANGELOG_AI.md
 
   Env:
     - AUGMENT_SESSION_AUTH (preferred), or AUGMENT_API_TOKEN (+ optional AUGMENT_API_URL)
     - GITHUB_TOKEN (optional, enrich with PR details when --github-repo is set or GITHUB_REPOSITORY exists)
 */
 
-import { spawn } from 'node:child_process';
+import { spawn, ChildProcess } from 'node:child_process';
 import { execFile as _execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
-import { dirname, join, resolve } from 'node:path';
+import { dirname, resolve } from 'node:path';
 
 const execFile = promisify(_execFile);
 
-function parseArgs(argv) {
-  const out = {
+interface ParsedArgs {
+  from?: string;
+  to: string;
+  since?: string;
+  maxCommits: number;
+  output: string;
+  githubRepo?: string;
+  includePulls: boolean;
+  title?: string;
+}
+
+interface Commit {
+  sha: string;
+  author: string;
+  date: string;
+  subject: string;
+  body: string;
+  pr?: PullRequest;
+}
+
+interface PullRequest {
+  number: number;
+  title: string;
+  html_url: string;
+  user?: string;
+  merged_at?: string;
+  labels: string[];
+}
+
+interface CommitRange {
+  from?: string;
+  to: string;
+  since?: string;
+}
+
+interface CommitQuery {
+  from?: string;
+  to?: string;
+  since?: string;
+  max: number;
+}
+
+interface ChangelogMeta {
+  repo?: string;
+  from?: string | null;
+  to: string;
+  since?: string | null;
+  generatedAt: string;
+}
+
+interface ChangelogInput {
+  meta: ChangelogMeta;
+  commits: Commit[];
+}
+
+interface InstructionMeta {
+  title?: string;
+  from?: string;
+  to?: string;
+  since?: string;
+  githubRepo?: string;
+}
+
+interface AuggieResult {
+  stdout: string;
+  stderr: string;
+}
+
+function parseArgs(argv: string[]): ParsedArgs {
+  const out: ParsedArgs = {
     from: undefined,
     to: 'HEAD',
     since: undefined,
@@ -36,7 +104,7 @@ function parseArgs(argv) {
   };
   for (let i = 2; i < argv.length; i++) {
     const a = argv[i];
-    const next = () => argv[++i];
+    const next = (): string => argv[++i];
     if (a === '--from') out.from = next();
     else if (a === '--to') out.to = next();
     else if (a === '--since') out.since = next();
@@ -46,16 +114,25 @@ function parseArgs(argv) {
     else if (a === '--no-pulls') out.includePulls = false;
     else if (a === '--title') out.title = next();
     else if (a === '--help' || a === '-h') {
-      console.log(
-        `Auggie AI Changelog\n\nFlags:\n  --from <ref>           Start ref/tag/sha (default: last tag if available)\n  --to <ref>             End ref/tag/sha (default: HEAD)\n  --since <date>         Alternative to --from, e.g. '2025-01-01' or '2 weeks ago'\n  --max-commits <n>      Limit number of commits scanned (default: 100)\n  --github-repo <owner/repo>  Use GitHub API to enrich PR metadata (requires GITHUB_TOKEN)\n  --no-pulls             Disable PR lookup even if github repo present\n  --output <path>        Where to write the changelog (default: CHANGELOG_AI.md)\n  --title <text>         Optional changelog title override\n`
-      );
+      console.log(`Auggie AI Changelog
+
+Flags:
+  --from <ref>           Start ref/tag/sha (default: last tag if available)
+  --to <ref>             End ref/tag/sha (default: HEAD)
+  --since <date>         Alternative to --from, e.g. '2025-01-01' or '2 weeks ago'
+  --max-commits <n>      Limit number of commits scanned (default: 100)
+  --github-repo <owner/repo>  Use GitHub API to enrich PR metadata (requires GITHUB_TOKEN)
+  --no-pulls             Disable PR lookup even if github repo present
+  --output <path>        Where to write the changelog (default: CHANGELOG_AI.md)
+  --title <text>         Optional changelog title override
+`);
       process.exit(0);
     }
   }
   return out;
 }
 
-async function git(args, opts = {}) {
+async function git(args: string[], opts: Record<string, any> = {}): Promise<string> {
   try {
     const { stdout } = await execFile('git', args, { ...opts });
     return stdout.toString('utf8').trim();
@@ -64,7 +141,7 @@ async function git(args, opts = {}) {
   }
 }
 
-async function resolveRange(from, to, since) {
+async function resolveRange(from?: string, to?: string, since?: string): Promise<CommitRange> {
   const toRef = to || 'HEAD';
   let fromRef = from;
   if (!fromRef && !since) {
@@ -75,7 +152,7 @@ async function resolveRange(from, to, since) {
   return { from: fromRef, to: toRef, since };
 }
 
-async function getCommits({ from, to, since, max }) {
+async function getCommits({ from, to, since, max }: CommitQuery): Promise<Commit[]> {
   const format = ['%H', '%an <%ae>', '%ad', '%s', '%b', '==END=='].join('\n');
   const args = ['log', `--max-count=${max}`, `--pretty=format:${format}`, '--date=iso'];
   if (since) args.push(`--since=${since}`);
@@ -83,11 +160,8 @@ async function getCommits({ from, to, since, max }) {
   else if (to && !since) args.push(to);
   const out = await git(args);
   if (!out) return [];
-  const chunks = out
-    .split('\n==END==')
-    .map((s) => s.trim())
-    .filter(Boolean);
-  const commits = [];
+  const chunks = out.split('\n==END==').map(s => s.trim()).filter(Boolean);
+  const commits: Commit[] = [];
   for (const c of chunks) {
     const lines = c.split(/\r?\n/);
     const [sha, author, date, subject, ...bodyLines] = lines;
@@ -96,13 +170,17 @@ async function getCommits({ from, to, since, max }) {
   return commits;
 }
 
-async function tryFetch(url, init) {
-  const res = await fetch(url, init);
-  if (!res.ok) return null;
-  return await res.json();
+async function tryFetch(url: string, init?: RequestInit): Promise<any | null> {
+  try {
+    const res = await fetch(url, init);
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
 }
 
-async function enrichWithPRs(commits, githubRepo, token) {
+async function enrichWithPRs(commits: Commit[], githubRepo?: string, token?: string): Promise<Commit[]> {
   if (!githubRepo || !token) return commits;
   const [owner, repo] = githubRepo.split('/');
   const headers = {
@@ -112,10 +190,10 @@ async function enrichWithPRs(commits, githubRepo, token) {
     'User-Agent': 'ai-changelog-script'
   };
   const limited = commits.slice(0, 200); // hard cap
-  const out = [];
+  const out: Commit[] = [];
   for (const c of limited) {
     const pulls = await tryFetch(`https://api.github.com/repos/${owner}/${repo}/commits/${c.sha}/pulls`, { headers });
-    let pr = null;
+    let pr: PullRequest | undefined = undefined;
     if (Array.isArray(pulls) && pulls.length) {
       const p = pulls[0];
       pr = {
@@ -124,7 +202,7 @@ async function enrichWithPRs(commits, githubRepo, token) {
         html_url: p.html_url,
         user: p.user?.login,
         merged_at: p.merged_at,
-        labels: (p.labels || []).map((l) => (typeof l === 'object' ? l.name : l))
+        labels: (p.labels || []).map((l: any) => (typeof l === 'object' ? l.name : l)),
       };
     }
     out.push({ ...c, pr });
@@ -132,7 +210,7 @@ async function enrichWithPRs(commits, githubRepo, token) {
   return out;
 }
 
-function buildInstruction(meta) {
+function buildInstruction(meta: InstructionMeta): string {
   const { title, from, to, since, githubRepo } = meta;
   const heading = title || 'AI Changelog';
   const rangeText = since ? `since ${since}` : from ? `${from}..${to}` : `up to ${to}`;
@@ -152,15 +230,15 @@ function buildInstruction(meta) {
   ].join('\n');
 }
 
-function runAuggie(instruction, inputJson) {
+function runAuggie(instruction: string, inputJson: ChangelogInput): Promise<AuggieResult> {
   const localBin = resolve('node_modules/.bin/auggie');
   const cmd = existsSync(localBin) ? localBin : 'auggie';
   return new Promise((resolvePromise, reject) => {
-    const child = spawn(cmd, ['--print', instruction], { stdio: ['pipe', 'pipe', 'pipe'] });
-    const out = [];
-    const err = [];
-    child.stdout.on('data', (c) => out.push(Buffer.isBuffer(c) ? c : Buffer.from(String(c))));
-    child.stderr.on('data', (c) => err.push(Buffer.isBuffer(c) ? c : Buffer.from(String(c))));
+    const child: ChildProcess = spawn(cmd, ['--print', instruction], { stdio: ['pipe', 'pipe', 'pipe'] });
+    const out: Buffer[] = [];
+    const err: Buffer[] = [];
+    child.stdout?.on('data', (c: Buffer | string) => out.push(Buffer.isBuffer(c) ? c : Buffer.from(String(c))));
+    child.stderr?.on('data', (c: Buffer | string) => err.push(Buffer.isBuffer(c) ? c : Buffer.from(String(c))));
     child.on('error', reject);
     child.on('close', (code) => {
       const stdout = Buffer.concat(out).toString('utf8');
@@ -171,12 +249,12 @@ function runAuggie(instruction, inputJson) {
         resolvePromise({ stdout, stderr });
       }
     });
-    child.stdin.write(JSON.stringify(inputJson, null, 2));
-    child.stdin.end();
+    child.stdin?.write(JSON.stringify(inputJson, null, 2));
+    child.stdin?.end();
   });
 }
 
-async function main() {
+async function main(): Promise<void> {
   const args = parseArgs(process.argv);
   const range = await resolveRange(args.from, args.to, args.since);
   const commits = await getCommits({ from: range.from, to: range.to, since: range.since, max: args.maxCommits });
@@ -190,7 +268,7 @@ async function main() {
   const commitsWithPRs =
     args.includePulls && githubRepo && token ? await enrichWithPRs(commits, githubRepo, token) : commits;
 
-  const meta = {
+  const meta: ChangelogMeta = {
     repo: githubRepo || (await git(['config', '--get', 'remote.origin.url'])),
     from: range.from || null,
     to: range.to || 'HEAD',
@@ -198,7 +276,7 @@ async function main() {
     generatedAt: new Date().toISOString()
   };
 
-  const input = { meta, commits: commitsWithPRs };
+  const input: ChangelogInput = { meta, commits: commitsWithPRs };
   const instruction = buildInstruction({ title: args.title, ...range, githubRepo });
 
   // Sanity check for Auggie credentials

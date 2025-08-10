@@ -37,15 +37,8 @@
     "build": "tsc -p tsconfig.json",
     "clean": "rimraf dist",
     "prepare": "npm run build",
-    "lint": "eslint . --ext .ts",
-    "lint:fix": "eslint . --ext .ts --fix",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "typecheck": "tsc --noEmit",
-    "test": "jest",
-    "test:ci": "jest --ci --coverage --watchAll=false",
-    "changelog:ai": "node scripts/generate-ai-changelog.mjs",
-    "changelog:ai:since": "node scripts/generate-ai-changelog.mjs --since '2 weeks ago'"
+    "changelog:ai": "npm run build && node dist/scripts/generate-ai-changelog.js",
+    "changelog:ai:since": "npm run build && node dist/scripts/generate-ai-changelog.js --since '2 weeks ago'"
   },
   "lint-staged": {
     "*.ts": [
