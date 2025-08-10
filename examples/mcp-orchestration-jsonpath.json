@@ -10,10 +10,7 @@
       "name": "Seed MCP JSON",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        -380,
-        -20
-      ]
+      "position": [-380, -20]
     },
     {
       "parameters": {
@@ -28,10 +25,7 @@
       "name": "Dark Auggie",
       "type": "@tankster-ai/n8n-nodes-dark-auggie.darkAuggie",
       "typeVersion": 1,
-      "position": [
-        -20,
-        -20
-      ],
+      "position": [-20, -20],
       "credentials": {
         "augmentApi": {
           "id": "<FILL_YOUR_AUGMENT_CREDENTIAL_ID>",
@@ -48,10 +42,7 @@
       "name": "Parse JSON",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        280,
-        -20
-      ]
+      "position": [280, -20]
     },
     {
       "parameters": {
@@ -65,10 +56,7 @@
       "name": "Jira Create",
       "type": "n8n-nodes-base.jira",
       "typeVersion": 1,
-      "position": [
-        560,
-        -20
-      ],
+      "position": [560, -20],
       "credentials": {
         "jiraSoftwareCloudApi": {
           "id": "<FILL_YOUR_JIRA_CREDENTIAL_ID>",
@@ -116,4 +104,3 @@
   "settings": {},
   "staticData": null
 }
-

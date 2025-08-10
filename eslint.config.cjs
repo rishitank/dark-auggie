@@ -10,12 +10,11 @@ module.exports = [
     languageOptions: {
       parser: tsParser,
       ecmaVersion: 2020,
-      sourceType: 'module',
+      sourceType: 'module'
     },
     plugins: { '@typescript-eslint': tseslint },
     rules: {
-      ...tseslint.configs.recommended.rules,
-    },
-  },
+      ...tseslint.configs.recommended.rules
+    }
+  }
 ];
-

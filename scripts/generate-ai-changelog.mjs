@@ -32,7 +32,7 @@ function parseArgs(argv) {
     output: 'CHANGELOG_AI.md',
     githubRepo: process.env.GITHUB_REPOSITORY || undefined,
     includePulls: true,
-    title: undefined,
+    title: undefined
   };
   for (let i = 2; i < argv.length; i++) {
     const a = argv[i];
@@ -46,7 +46,9 @@ function parseArgs(argv) {
     else if (a === '--no-pulls') out.includePulls = false;
     else if (a === '--title') out.title = next();
     else if (a === '--help' || a === '-h') {
-      console.log(`Auggie AI Changelog\n\nFlags:\n  --from <ref>           Start ref/tag/sha (default: last tag if available)\n  --to <ref>             End ref/tag/sha (default: HEAD)\n  --since <date>         Alternative to --from, e.g. '2025-01-01' or '2 weeks ago'\n  --max-commits <n>      Limit number of commits scanned (default: 100)\n  --github-repo <owner/repo>  Use GitHub API to enrich PR metadata (requires GITHUB_TOKEN)\n  --no-pulls             Disable PR lookup even if github repo present\n  --output <path>        Where to write the changelog (default: CHANGELOG_AI.md)\n  --title <text>         Optional changelog title override\n`);
+      console.log(
+        `Auggie AI Changelog\n\nFlags:\n  --from <ref>           Start ref/tag/sha (default: last tag if available)\n  --to <ref>             End ref/tag/sha (default: HEAD)\n  --since <date>         Alternative to --from, e.g. '2025-01-01' or '2 weeks ago'\n  --max-commits <n>      Limit number of commits scanned (default: 100)\n  --github-repo <owner/repo>  Use GitHub API to enrich PR metadata (requires GITHUB_TOKEN)\n  --no-pulls             Disable PR lookup even if github repo present\n  --output <path>        Where to write the changelog (default: CHANGELOG_AI.md)\n  --title <text>         Optional changelog title override\n`
+      );
       process.exit(0);
     }
   }
@@ -77,10 +79,14 @@ async function getCommits({ from, to, since, max }) {
   const format = ['%H', '%an <%ae>', '%ad', '%s', '%b', '==END=='].join('\n');
   const args = ['log', `--max-count=${max}`, `--pretty=format:${format}`, '--date=iso'];
   if (since) args.push(`--since=${since}`);
-  if (from) args.push(`${from}..${to || 'HEAD'}`); else if (to && !since) args.push(to);
+  if (from) args.push(`${from}..${to || 'HEAD'}`);
+  else if (to && !since) args.push(to);
   const out = await git(args);
   if (!out) return [];
-  const chunks = out.split('\n==END==').map(s => s.trim()).filter(Boolean);
+  const chunks = out
+    .split('\n==END==')
+    .map((s) => s.trim())
+    .filter(Boolean);
   const commits = [];
   for (const c of chunks) {
     const lines = c.split(/\r?\n/);
@@ -103,7 +109,7 @@ async function enrichWithPRs(commits, githubRepo, token) {
     Authorization: `Bearer ${token}`,
     Accept: 'application/vnd.github+json',
     'X-GitHub-Api-Version': '2022-11-28',
-    'User-Agent': 'ai-changelog-script',
+    'User-Agent': 'ai-changelog-script'
   };
   const limited = commits.slice(0, 200); // hard cap
   const out = [];
@@ -118,7 +124,7 @@ async function enrichWithPRs(commits, githubRepo, token) {
         html_url: p.html_url,
         user: p.user?.login,
         merged_at: p.merged_at,
-        labels: (p.labels || []).map(l => (typeof l === 'object' ? l.name : l)),
+        labels: (p.labels || []).map((l) => (typeof l === 'object' ? l.name : l))
       };
     }
     out.push({ ...c, pr });
@@ -129,12 +135,12 @@ async function enrichWithPRs(commits, githubRepo, token) {
 function buildInstruction(meta) {
   const { title, from, to, since, githubRepo } = meta;
   const heading = title || 'AI Changelog';
-  const rangeText = since ? `since ${since}` : (from ? `${from}..${to}` : `up to ${to}`);
+  const rangeText = since ? `since ${since}` : from ? `${from}..${to}` : `up to ${to}`;
   return [
     `${heading} — generate a clean Markdown changelog ${rangeText}.`,
     '',
     'Requirements:',
-    '- Use top-level H1 with the title and today\'s date (YYYY-MM-DD).',
+    "- Use top-level H1 with the title and today's date (YYYY-MM-DD).",
     '- Group entries under H2 sections: Features, Fixes, Performance, Docs, Refactor, Chore, Other (omit empty).',
     '- Use concise bullet points (imperative mood). Include PR numbers like #123 when present and link to PRs if html_url is given.',
     '- Avoid duplicating the same change if both a commit and PR refer to it.',
@@ -142,7 +148,7 @@ function buildInstruction(meta) {
     '- End with a short summary section with counts by type.',
     '',
     'You will receive JSON input with fields: commits[], each {sha, author, date, subject, body, pr?{number,title,html_url,user,labels[]}}, and meta{repo, from, to, since}.',
-    'Return only Markdown. No extra commentary.',
+    'Return only Markdown. No extra commentary.'
   ].join('\n');
 }
 
@@ -153,8 +159,8 @@ function runAuggie(instruction, inputJson) {
     const child = spawn(cmd, ['--print', instruction], { stdio: ['pipe', 'pipe', 'pipe'] });
     const out = [];
     const err = [];
-    child.stdout.on('data', c => out.push(Buffer.isBuffer(c) ? c : Buffer.from(String(c))));
-    child.stderr.on('data', c => err.push(Buffer.isBuffer(c) ? c : Buffer.from(String(c))));
+    child.stdout.on('data', (c) => out.push(Buffer.isBuffer(c) ? c : Buffer.from(String(c))));
+    child.stderr.on('data', (c) => err.push(Buffer.isBuffer(c) ? c : Buffer.from(String(c))));
     child.on('error', reject);
     child.on('close', (code) => {
       const stdout = Buffer.concat(out).toString('utf8');
@@ -181,16 +187,15 @@ async function main() {
 
   const githubRepo = args.githubRepo;
   const token = process.env.GITHUB_TOKEN || process.env.GH_TOKEN || process.env.GITHUB_API_TOKEN;
-  const commitsWithPRs = args.includePulls && githubRepo && token
-    ? await enrichWithPRs(commits, githubRepo, token)
-    : commits;
+  const commitsWithPRs =
+    args.includePulls && githubRepo && token ? await enrichWithPRs(commits, githubRepo, token) : commits;
 
   const meta = {
     repo: githubRepo || (await git(['config', '--get', 'remote.origin.url'])),
     from: range.from || null,
     to: range.to || 'HEAD',
     since: range.since || null,
-    generatedAt: new Date().toISOString(),
+    generatedAt: new Date().toISOString()
   };
 
   const input = { meta, commits: commitsWithPRs };
@@ -213,4 +218,3 @@ main().catch((err) => {
   console.error(err?.stack || String(err));
   process.exit(1);
 });
-

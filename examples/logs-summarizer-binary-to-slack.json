@@ -12,10 +12,7 @@
       "name": "Fetch Logs",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 1,
-      "position": [
-        -380,
-        -20
-      ]
+      "position": [-380, -20]
     },
     {
       "parameters": {
@@ -28,10 +25,7 @@
       "name": "Dark Auggie",
       "type": "@tankster-ai/n8n-nodes-dark-auggie.darkAuggie",
       "typeVersion": 1,
-      "position": [
-        -60,
-        -20
-      ],
+      "position": [-60, -20],
       "credentials": {
         "augmentApi": {
           "id": "<FILL_YOUR_AUGMENT_CREDENTIAL_ID>",
@@ -49,10 +43,7 @@
       "name": "Slack Message",
       "type": "n8n-nodes-base.slack",
       "typeVersion": 1,
-      "position": [
-        260,
-        -20
-      ],
+      "position": [260, -20],
       "credentials": {
         "slackApi": {
           "id": "<FILL_YOUR_SLACK_CREDENTIAL_ID>",
@@ -89,4 +80,3 @@
   "settings": {},
   "staticData": null
 }
-

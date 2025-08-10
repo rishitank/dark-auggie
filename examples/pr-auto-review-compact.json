@@ -3,24 +3,16 @@
   "nodes": [
     {
       "parameters": {
-        "events": [
-          "pullRequest"
-        ],
+        "events": ["pullRequest"],
         "additionalFields": {
-          "pullRequestAction": [
-            "opened",
-            "synchronize"
-          ]
+          "pullRequestAction": ["opened", "synchronize"]
         }
       },
       "id": "GithubTrigger",
       "name": "GitHub Trigger",
       "type": "n8n-nodes-base.githubTrigger",
       "typeVersion": 1,
-      "position": [
-        -420,
-        -20
-      ],
+      "position": [-420, -20],
       "credentials": {
         "githubApi": {
           "id": "<FILL_YOUR_GITHUB_CREDENTIAL_ID>",
@@ -46,10 +38,7 @@
       "name": "Fetch PR Diff",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 1,
-      "position": [
-        -100,
-        -20
-      ],
+      "position": [-100, -20],
       "credentials": {
         "githubApi": {
           "id": "<FILL_YOUR_GITHUB_CREDENTIAL_ID>",
@@ -69,10 +58,7 @@
       "name": "Dark Auggie",
       "type": "@tankster-ai/n8n-nodes-dark-auggie.darkAuggie",
       "typeVersion": 1,
-      "position": [
-        160,
-        -20
-      ],
+      "position": [160, -20],
       "credentials": {
         "augmentApi": {
           "id": "<FILL_YOUR_AUGMENT_CREDENTIAL_ID>",
@@ -94,10 +80,7 @@
       "name": "Create PR Review",
       "type": "n8n-nodes-base.github",
       "typeVersion": 1,
-      "position": [
-        460,
-        -20
-      ],
+      "position": [460, -20],
       "credentials": {
         "githubApi": {
           "id": "<FILL_YOUR_GITHUB_CREDENTIAL_ID>",
@@ -145,4 +128,3 @@
   "settings": {},
   "staticData": null
 }
-
