@@ -33,4 +33,5 @@ jobs:
         run: npm run build
 
       - name: Test
+        if: ${{ hashFiles('**/*.test.ts', '**/*.spec.ts') != '' }}
         run: npm run test:ci
