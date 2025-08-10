@@ -37,8 +37,8 @@
     "build": "tsc -p tsconfig.json",
     "clean": "rimraf dist",
     "prepare": "npm run build",
-    "changelog:ai": "node scripts/generate-ai-changelog.mjs",
-    "changelog:ai:since": "node scripts/generate-ai-changelog.mjs --since '2 weeks ago'"
+    "changelog:ai": "npm run build && node dist/scripts/generate-ai-changelog.js",
+    "changelog:ai:since": "npm run build && node dist/scripts/generate-ai-changelog.js --since '2 weeks ago'"
   },
   "dependencies": {
     "@augmentcode/auggie": "^0.2.0"
