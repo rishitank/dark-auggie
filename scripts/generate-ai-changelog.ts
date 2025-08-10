@@ -160,7 +160,10 @@ async function getCommits({ from, to, since, max }: CommitQuery): Promise<Commit
   else if (to && !since) args.push(to);
   const out = await git(args);
   if (!out) return [];
-  const chunks = out.split('\n==END==').map(s => s.trim()).filter(Boolean);
+  const chunks = out
+    .split('\n==END==')
+    .map((s) => s.trim())
+    .filter(Boolean);
   const commits: Commit[] = [];
   for (const c of chunks) {
     const lines = c.split(/\r?\n/);
@@ -202,7 +205,7 @@ async function enrichWithPRs(commits: Commit[], githubRepo?: string, token?: str
         html_url: p.html_url,
         user: p.user?.login,
         merged_at: p.merged_at,
-        labels: (p.labels || []).map((l: any) => (typeof l === 'object' ? l.name : l)),
+        labels: (p.labels || []).map((l: any) => (typeof l === 'object' ? l.name : l))
       };
     }
     out.push({ ...c, pr });
