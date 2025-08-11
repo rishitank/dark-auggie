@@ -40,7 +40,7 @@
     "lint": "eslint . --ext .ts",
     "format:check": "prettier --check .",
     "typecheck": "tsc --noEmit",
-    "test:ci": "jest --ci --coverage --watchAll=false",
+    "test:ci": "node --experimental-strip-types node_modules/.bin/jest --ci --coverage --watchAll=false",
     "changelog:ai": "node scripts/run-ai-changelog.js",
     "changelog:ai:since": "node scripts/run-ai-changelog.js --since '2 weeks ago'"
   },
