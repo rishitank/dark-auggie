@@ -4,7 +4,7 @@ import prettier from 'eslint-config-prettier';
 
 /** @type {import('eslint').Linter.FlatConfig[]} */
 export default [
-  // Ignore generated and vendor folders
+  // Ignore generated and vendor folders; migrate from .eslintignore
   { ignores: ['dist/**', 'node_modules/**', 'coverage/**', 'logs/**'] },
 
   // TypeScript source files
