@@ -2,9 +2,10 @@ import tsParser from '@typescript-eslint/parser';
 import tsPlugin from '@typescript-eslint/eslint-plugin';
 import prettier from 'eslint-config-prettier';
 
+// Single flat config is now the source of truth
 /** @type {import('eslint').Linter.FlatConfig[]} */
 export default [
-  // Ignore generated and vendor folders; migrate from .eslintignore
+  // Ignore generated and vendor folders
   { ignores: ['dist/**', 'node_modules/**', 'coverage/**', 'logs/**'] },
 
   // TypeScript source files
@@ -13,7 +14,7 @@ export default [
     languageOptions: {
       parser: tsParser,
       parserOptions: {
-        // Keep lightweight; we don't require project service for linting
+        // Prefer faster linting without project service; enable later if needed
         project: false,
         sourceType: 'module',
         ecmaVersion: 'latest'
