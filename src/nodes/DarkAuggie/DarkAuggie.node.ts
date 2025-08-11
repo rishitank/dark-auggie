@@ -232,7 +232,7 @@ export class DarkAuggie implements INodeType {
         Object.entries(obj).forEach(([k, v]) => {
           env[String(k)] = String(v as any);
         });
-      } catch (e) {
+      } catch {
         // ignore parse error; user will see it in output if command fails
       }
     }

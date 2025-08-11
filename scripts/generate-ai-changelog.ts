@@ -15,8 +15,7 @@
     - GITHUB_TOKEN (optional, enrich with PR details when --github-repo is set or GITHUB_REPOSITORY exists)
 */
 
-import { spawn, ChildProcess } from 'node:child_process';
-import { execFile as _execFile } from 'node:child_process';
+import { spawn, execFile as _execFile, type ChildProcess } from 'node:child_process';
 import { promisify } from 'node:util';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
@@ -136,7 +135,8 @@ async function git(args: string[], opts: Record<string, any> = {}): Promise<stri
   try {
     const { stdout } = await execFile('git', args, { ...opts });
     return String(stdout).trim();
-  } catch (e) {
+  } catch {
+    // ignore
     return '';
   }
 }
@@ -214,7 +214,7 @@ async function enrichWithPRs(commits: Commit[], githubRepo?: string, token?: str
 }
 
 function buildInstruction(meta: InstructionMeta): string {
-  const { title, from, to, since, githubRepo } = meta;
+  const { title, from, to, since } = meta;
   const heading = title || 'AI Changelog';
   const rangeText = since ? `since ${since}` : from ? `${from}..${to}` : `up to ${to}`;
   return [
