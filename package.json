@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Dark Auggie: n8n community node wrapping the Augment Code Auggie CLI for automated AI workflows.",
   "license": "MIT",
-  "type": "module",
+  "type": "commonjs",
   "engines": {
     "node": ">=24.5.0"
   },

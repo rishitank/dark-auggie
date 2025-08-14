@@ -22,6 +22,11 @@ import { dirname, resolve } from 'node:path';
 
 const execFile = promisify(_execFile);
 
+
+// TypeScript on Node may not have fetch types by default; rely on runtime global
+// and use a minimal declaration to satisfy the compiler.
+declare const fetch: any;
+
 interface ParsedArgs {
   from?: string;
   to: string;
@@ -173,7 +178,7 @@ async function getCommits({ from, to, since, max }: CommitQuery): Promise<Commit
   return commits;
 }
 
-async function tryFetch(url: string, init?: RequestInit): Promise<any | null> {
+async function tryFetch(url: string, init?: any): Promise<any | null> {
   try {
     const res = await fetch(url, init);
     if (!res.ok) return null;

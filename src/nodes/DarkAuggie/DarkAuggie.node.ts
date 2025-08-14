@@ -246,7 +246,7 @@ export class DarkAuggie implements INodeType {
     const rulesPath = (this.getNodeParameter('rulesPath', 0) as string) || '';
     const mcpConfigSource = (this.getNodeParameter('mcpConfigSource', 0) as string) || 'none';
 
-    const buildCommonFlags = (): string[] => {
+    const buildCommonFlags = (i: number): string[] => {
       const flags: string[] = [];
       if (workspaceRoot) {
         flags.push('--workspace-root', workspaceRoot);
@@ -255,16 +255,19 @@ export class DarkAuggie implements INodeType {
         flags.push('--rules', rulesPath);
       }
       if (mcpConfigSource === 'inline') {
-        const mcpJson = (this.getNodeParameter('mcpJson', 0) as string) || '';
+        const mcpJson = (this.getNodeParameter('mcpJson', i) as string) || '';
         if (mcpJson) flags.push('--mcp-config', mcpJson);
       } else if (mcpConfigSource === 'file') {
-        const mcpFile = (this.getNodeParameter('mcpFile', 0) as string) || '';
+        const mcpFile = (this.getNodeParameter('mcpFile', i) as string) || '';
         if (mcpFile) flags.push('--mcp-config', mcpFile);
       } else if (mcpConfigSource === 'jsonPath') {
-        const mcpJsonPath = (this.getNodeParameter('mcpJsonPath', 0) as string) || '';
+        const mcpJsonPath = (this.getNodeParameter('mcpJsonPath', i) as string) || '';
         if (mcpJsonPath) {
-          const value = this.getNodeParameter(mcpJsonPath, 0, '') as string;
-          if (value) flags.push('--mcp-config', value);
+          const item = items[i];
+          const value: any = mcpJsonPath.split('.').reduce((acc: any, key: string) => (acc == null ? undefined : acc[key]), item?.json as any);
+          if (value !== undefined && value !== null) {
+            flags.push('--mcp-config', typeof value === 'string' ? value : JSON.stringify(value));
+          }
         }
       }
       return flags;
@@ -315,7 +318,7 @@ export class DarkAuggie implements INodeType {
           const instruction = (this.getNodeParameter('instruction', i) as string) || '';
           const printMode = (this.getNodeParameter('printMode', i) as string) || 'print';
           const modeArgs = printMode === 'quiet' ? ['--quiet'] : printMode === 'compact' ? ['--compact'] : ['--print'];
-          const flags = buildCommonFlags.call(this);
+          const flags = buildCommonFlags.call(this, i);
 
           // Use spawn to support piping stdin
           const child = spawn(auggieCmd, [...modeArgs, instruction, ...flags], { env, cwd: cwdParam, stdio: 'pipe' });
@@ -338,7 +341,7 @@ export class DarkAuggie implements INodeType {
           const instruction = (this.getNodeParameter('instruction', i) as string) || '';
           const continuePrevious = this.getNodeParameter('continuePrevious', i) as boolean;
           const dontSaveSession = this.getNodeParameter('dontSaveSession', i) as boolean;
-          const flags = buildCommonFlags.call(this);
+          const flags = buildCommonFlags.call(this, i);
           if (continuePrevious) flags.unshift('--continue');
           if (dontSaveSession) flags.unshift('--dont-save-session');
 
