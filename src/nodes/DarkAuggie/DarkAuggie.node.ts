@@ -7,8 +7,8 @@ import type {
   INodeExecutionData,
   INodeType,
   INodeTypeDescription,
+  NodeConnectionType
 } from 'n8n-workflow';
-import { NodeConnectionType } from 'n8n-workflow';
 
 const pExecFile = promisify(execFile);
 
@@ -22,15 +22,16 @@ export class DarkAuggie implements INodeType {
     subtitle: 'Execute Auggie CLI',
     description: 'Wraps the Augment Code Auggie CLI for automated workflows',
     defaults: {
-      name: 'Dark Auggie',
+      name: 'Dark Auggie'
     },
-    inputs: [NodeConnectionType.Main],
-    outputs: [NodeConnectionType.Main],
+    // Use string literal to avoid runtime import issues across n8n versions
+    inputs: ['main' as NodeConnectionType],
+    outputs: ['main' as NodeConnectionType],
     credentials: [
       {
         name: 'augmentApi',
-        required: true,
-      },
+        required: true
+      }
     ],
     properties: [
       {
@@ -40,9 +41,13 @@ export class DarkAuggie implements INodeType {
         options: [
           { name: 'Run CLI', value: 'runCli', description: 'Run a raw Auggie CLI command' },
           { name: 'Quick Print', value: 'print', description: 'auggie --print/--quiet/--compact one-shot' },
-          { name: 'Interactive Step', value: 'interactive', description: 'Provide initial instruction to interactive mode (non-TTY)' },
+          {
+            name: 'Interactive Step',
+            value: 'interactive',
+            description: 'Provide initial instruction to interactive mode (non-TTY)'
+          }
         ],
-        default: 'runCli',
+        default: 'runCli'
       },
       // Run CLI specific
       {
@@ -51,7 +56,7 @@ export class DarkAuggie implements INodeType {
         type: 'string',
         default: 'auggie',
         description: 'Command to execute, typically "auggie"',
-        displayOptions: { show: { operation: ['runCli'] } },
+        displayOptions: { show: { operation: ['runCli'] } }
       },
       {
         displayName: 'Arguments',
@@ -59,7 +64,7 @@ export class DarkAuggie implements INodeType {
         type: 'string',
         default: '--help',
         description: 'Arguments to pass to the command (e.g., --print "Summarize this repo")',
-        displayOptions: { show: { operation: ['runCli'] } },
+        displayOptions: { show: { operation: ['runCli'] } }
       },
       // Print / Interactive
       {
@@ -69,10 +74,10 @@ export class DarkAuggie implements INodeType {
         options: [
           { name: 'Print', value: 'print' },
           { name: 'Quiet', value: 'quiet' },
-          { name: 'Compact', value: 'compact' },
+          { name: 'Compact', value: 'compact' }
         ],
         default: 'print',
-        displayOptions: { show: { operation: ['print'] } },
+        displayOptions: { show: { operation: ['print'] } }
       },
       {
         displayName: 'Instruction',
@@ -80,7 +85,7 @@ export class DarkAuggie implements INodeType {
         type: 'string',
         default: 'Summarize the staged changes',
         description: 'Text sent to auggie via --print or as initial instruction',
-        displayOptions: { show: { operation: ['print', 'interactive'] } },
+        displayOptions: { show: { operation: ['print', 'interactive'] } }
       },
       {
         displayName: 'Continue Previous Session',
@@ -88,7 +93,7 @@ export class DarkAuggie implements INodeType {
         type: 'boolean',
         default: false,
         description: 'Add --continue to resume previous conversation',
-        displayOptions: { show: { operation: ['interactive'] } },
+        displayOptions: { show: { operation: ['interactive'] } }
       },
       {
         displayName: "Don't Save Session",
@@ -96,7 +101,7 @@ export class DarkAuggie implements INodeType {
         type: 'boolean',
         default: false,
         description: 'Add --dont-save-session to prevent saving to history',
-        displayOptions: { show: { operation: ['interactive'] } },
+        displayOptions: { show: { operation: ['interactive'] } }
       },
       // Common config
       {
@@ -104,14 +109,14 @@ export class DarkAuggie implements INodeType {
         name: 'workspaceRoot',
         type: 'string',
         default: '',
-        description: 'Pass --workspace-root to set the project root',
+        description: 'Pass --workspace-root to set the project root'
       },
       {
         displayName: 'Rules File Path',
         name: 'rulesPath',
         type: 'string',
         default: '',
-        description: 'Pass --rules with path to additional rules file',
+        description: 'Pass --rules with path to additional rules file'
       },
       {
         displayName: 'MCP Config Source',
@@ -121,10 +126,10 @@ export class DarkAuggie implements INodeType {
           { name: 'None', value: 'none' },
           { name: 'Inline JSON', value: 'inline' },
           { name: 'File Path', value: 'file' },
-          { name: 'From JSON Path', value: 'jsonPath' },
+          { name: 'From JSON Path', value: 'jsonPath' }
         ],
         default: 'none',
-        description: 'Provide MCP config as JSON, file path, or from item JSON',
+        description: 'Provide MCP config as JSON, file path, or from item JSON'
       },
       {
         displayName: 'MCP JSON',
@@ -132,7 +137,7 @@ export class DarkAuggie implements INodeType {
         type: 'string',
         default: '',
         description: 'Inline MCP JSON string',
-        displayOptions: { show: { mcpConfigSource: ['inline'] } },
+        displayOptions: { show: { mcpConfigSource: ['inline'] } }
       },
       {
         displayName: 'MCP Config File Path',
@@ -140,7 +145,7 @@ export class DarkAuggie implements INodeType {
         type: 'string',
         default: '',
         description: 'Path to MCP JSON file',
-        displayOptions: { show: { mcpConfigSource: ['file'] } },
+        displayOptions: { show: { mcpConfigSource: ['file'] } }
       },
       {
         displayName: 'MCP JSON Path',
@@ -148,7 +153,7 @@ export class DarkAuggie implements INodeType {
         type: 'string',
         default: '',
         description: 'Dot path to JSON field on the input item that contains MCP JSON',
-        displayOptions: { show: { mcpConfigSource: ['jsonPath'] } },
+        displayOptions: { show: { mcpConfigSource: ['jsonPath'] } }
       },
       // Stdin
       {
@@ -158,9 +163,9 @@ export class DarkAuggie implements INodeType {
         options: [
           { name: 'None', value: 'none' },
           { name: 'From JSON Path', value: 'jsonPath' },
-          { name: 'Binary Property', value: 'binary' },
+          { name: 'Binary Property', value: 'binary' }
         ],
-        default: 'none',
+        default: 'none'
       },
       {
         displayName: 'Stdin JSON Path',
@@ -168,7 +173,7 @@ export class DarkAuggie implements INodeType {
         type: 'string',
         default: '',
         description: 'Dot path to JSON field on the input item that should be piped to stdin',
-        displayOptions: { show: { stdinSource: ['jsonPath'] } },
+        displayOptions: { show: { stdinSource: ['jsonPath'] } }
       },
       {
         displayName: 'Stdin Binary Property',
@@ -176,7 +181,7 @@ export class DarkAuggie implements INodeType {
         type: 'string',
         default: '',
         description: 'Binary property name to pipe to stdin',
-        displayOptions: { show: { stdinSource: ['binary'] } },
+        displayOptions: { show: { stdinSource: ['binary'] } }
       },
       // Env injection
       {
@@ -184,14 +189,14 @@ export class DarkAuggie implements INodeType {
         name: 'additionalEnvJson',
         type: 'string',
         default: '',
-        description: 'Additional environment variables as a JSON object {"KEY":"VALUE"}',
+        description: 'Additional environment variables as a JSON object {"KEY":"VALUE"}'
       },
       {
         displayName: 'Working Directory',
         name: 'cwd',
         type: 'string',
         default: '',
-        description: 'Optional working directory for the CLI',
+        description: 'Optional working directory for the CLI'
       },
       {
         displayName: 'Timeout (ms)',
@@ -199,9 +204,9 @@ export class DarkAuggie implements INodeType {
         type: 'number',
         typeOptions: { minValue: 0 },
         default: 600000,
-        description: 'Process timeout in milliseconds',
-      },
-    ],
+        description: 'Process timeout in milliseconds'
+      }
+    ]
   };
 
   async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
@@ -224,8 +229,10 @@ export class DarkAuggie implements INodeType {
     if (additionalEnvJson) {
       try {
         const obj = JSON.parse(additionalEnvJson);
-        Object.entries(obj).forEach(([k, v]) => { env[String(k)] = String(v as any); });
-      } catch (e) {
+        Object.entries(obj).forEach(([k, v]) => {
+          env[String(k)] = String(v as any);
+        });
+      } catch {
         // ignore parse error; user will see it in output if command fails
       }
     }
@@ -239,21 +246,30 @@ export class DarkAuggie implements INodeType {
     const rulesPath = (this.getNodeParameter('rulesPath', 0) as string) || '';
     const mcpConfigSource = (this.getNodeParameter('mcpConfigSource', 0) as string) || 'none';
 
-    const buildCommonFlags = (): string[] => {
+    const buildCommonFlags = (i: number): string[] => {
       const flags: string[] = [];
-      if (workspaceRoot) { flags.push('--workspace-root', workspaceRoot); }
-      if (rulesPath) { flags.push('--rules', rulesPath); }
+      if (workspaceRoot) {
+        flags.push('--workspace-root', workspaceRoot);
+      }
+      if (rulesPath) {
+        flags.push('--rules', rulesPath);
+      }
       if (mcpConfigSource === 'inline') {
-        const mcpJson = (this.getNodeParameter('mcpJson', 0) as string) || '';
+        const mcpJson = (this.getNodeParameter('mcpJson', i) as string) || '';
         if (mcpJson) flags.push('--mcp-config', mcpJson);
       } else if (mcpConfigSource === 'file') {
-        const mcpFile = (this.getNodeParameter('mcpFile', 0) as string) || '';
+        const mcpFile = (this.getNodeParameter('mcpFile', i) as string) || '';
         if (mcpFile) flags.push('--mcp-config', mcpFile);
       } else if (mcpConfigSource === 'jsonPath') {
-        const mcpJsonPath = (this.getNodeParameter('mcpJsonPath', 0) as string) || '';
+        const mcpJsonPath = (this.getNodeParameter('mcpJsonPath', i) as string) || '';
         if (mcpJsonPath) {
-          const value = this.getNodeParameter(mcpJsonPath, 0, '') as string;
-          if (value) flags.push('--mcp-config', value);
+          const item = items[i];
+          const value: any = mcpJsonPath
+            .split('.')
+            .reduce((acc: any, key: string) => (acc == null ? undefined : acc[key]), item?.json as any);
+          if (value !== undefined && value !== null) {
+            flags.push('--mcp-config', typeof value === 'string' ? value : JSON.stringify(value));
+          }
         }
       }
       return flags;
@@ -268,9 +284,12 @@ export class DarkAuggie implements INodeType {
           // getNodeParameter can read expression; for arbitrary json path, fallback to item.json
           const val = this.getNodeParameter(p, i, undefined) as any;
           const item = items[i];
-          const fallback = p.split('.').reduce((acc: any, key: string) => (acc ? acc[key] : undefined), item.json as any);
+          const fallback = p
+            .split('.')
+            .reduce((acc: any, key: string) => (acc ? acc[key] : undefined), item.json as any);
           const data = val ?? fallback;
-          if (data !== undefined && data !== null) return Buffer.from(typeof data === 'string' ? data : JSON.stringify(data));
+          if (data !== undefined && data !== null)
+            return Buffer.from(typeof data === 'string' ? data : JSON.stringify(data));
         }
       } else if (stdinSource === 'binary') {
         const binProp = (this.getNodeParameter('stdinBinaryProperty', i) as string) || '';
@@ -301,7 +320,7 @@ export class DarkAuggie implements INodeType {
           const instruction = (this.getNodeParameter('instruction', i) as string) || '';
           const printMode = (this.getNodeParameter('printMode', i) as string) || 'print';
           const modeArgs = printMode === 'quiet' ? ['--quiet'] : printMode === 'compact' ? ['--compact'] : ['--print'];
-          const flags = buildCommonFlags.call(this);
+          const flags = buildCommonFlags.call(this, i);
 
           // Use spawn to support piping stdin
           const child = spawn(auggieCmd, [...modeArgs, instruction, ...flags], { env, cwd: cwdParam, stdio: 'pipe' });
@@ -312,7 +331,10 @@ export class DarkAuggie implements INodeType {
           await new Promise<void>((resolve, reject) => {
             if (stdinData) child.stdin?.write(stdinData);
             child.stdin?.end();
-            child.on('close', (code) => { exitCode = code ?? 0; resolve(); });
+            child.on('close', (code) => {
+              exitCode = code ?? 0;
+              resolve();
+            });
             child.on('error', (e) => reject(e));
           });
           stdout = Buffer.concat(chunks).toString('utf8');
@@ -321,11 +343,15 @@ export class DarkAuggie implements INodeType {
           const instruction = (this.getNodeParameter('instruction', i) as string) || '';
           const continuePrevious = this.getNodeParameter('continuePrevious', i) as boolean;
           const dontSaveSession = this.getNodeParameter('dontSaveSession', i) as boolean;
-          const flags = buildCommonFlags.call(this);
+          const flags = buildCommonFlags.call(this, i);
           if (continuePrevious) flags.unshift('--continue');
           if (dontSaveSession) flags.unshift('--dont-save-session');
 
-          const child = spawn(auggieCmd, ['--instruction', instruction, ...flags], { env, cwd: cwdParam, stdio: 'pipe' });
+          const child = spawn(auggieCmd, ['--instruction', instruction, ...flags], {
+            env,
+            cwd: cwdParam,
+            stdio: 'pipe'
+          });
           const chunks: Buffer[] = [];
           const errChunks: Buffer[] = [];
           child.stdout?.on('data', (c) => chunks.push(Buffer.isBuffer(c) ? c : Buffer.from(String(c))));
@@ -333,7 +359,10 @@ export class DarkAuggie implements INodeType {
           await new Promise<void>((resolve, reject) => {
             if (stdinData) child.stdin?.write(stdinData);
             child.stdin?.end();
-            child.on('close', (code) => { exitCode = code ?? 0; resolve(); });
+            child.on('close', (code) => {
+              exitCode = code ?? 0;
+              resolve();
+            });
             child.on('error', (e) => reject(e));
           });
           stdout = Buffer.concat(chunks).toString('utf8');
@@ -355,8 +384,8 @@ export class DarkAuggie implements INodeType {
             error: error.message || 'Unknown error',
             code: error.code,
             stdout: error.stdout?.toString?.() || '',
-            stderr: error.stderr?.toString?.() || '',
-          },
+            stderr: error.stderr?.toString?.() || ''
+          }
         });
       }
     }
@@ -364,4 +393,3 @@ export class DarkAuggie implements INodeType {
     return [returnData];
   }
 }
-

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" fill="none">
+  <title>Dark Auggie v4 — Glyph (no plate)</title>
+  <defs>
+    <linearGradient id="v4g_core" x1="128" y1="40" x2="128" y2="216">
+      <stop offset="0" stop-color="#46A46F"/>
+      <stop offset="1" stop-color="#2F6A4A"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Pure glyph: good for tiny sizes -->
+  <path d="M128 36 L206 200 H176 L156 160 H100 L80 200 H50 L128 36 Z" fill="#0E0E0E"/>
+  <path d="M128 52 L172 146 H152 L128 98 L104 146 H84 L128 52 Z" fill="#141414"/>
+  <rect x="122" y="72" width="12" height="128" rx="6" fill="url(#v4g_core)"/>
+</svg>
+

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" fill="none">
+  <title>Dark Auggie v1 — Badge Minimal</title>
+  <defs>
+    <linearGradient id="v1g_bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0B0B0B"/>
+      <stop offset="1" stop-color="#1A1A1A"/>
+    </linearGradient>
+    <linearGradient id="v1g_core" x1="128" y1="60" x2="128" y2="196">
+      <stop offset="0" stop-color="#3D855E"/>
+      <stop offset="1" stop-color="#2F6A4A"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background badge -->
+  <rect x="10" y="10" width="236" height="236" rx="24" fill="url(#v1g_bg)"/>
+  <rect x="10" y="10" width="236" height="236" rx="24" stroke="#0F0F10" stroke-width="2"/>
+
+  <!-- Stylized A (helmet silhouette) -->
+  <path d="M128 36 L206 200 H176 L156 160 H100 L80 200 H50 L128 36 Z" fill="#0E0E0E"/>
+
+  <!-- Inner bar (cross) subtly implied by notch -->
+  <path d="M128 56 L168 144 H152 L128 96 L104 144 H88 L128 56 Z" fill="#131313"/>
+
+  <!-- Augment core -->
+  <rect x="122" y="72" width="12" height="128" rx="6" fill="url(#v1g_core)"/>
+
+  <!-- Code bracket hints -->
+  <path d="M56 118 L76 126 L76 134 L56 142 Z" fill="#101010"/>
+  <path d="M200 118 L180 126 L180 134 L200 142 Z" fill="#101010"/>
+</svg>
+

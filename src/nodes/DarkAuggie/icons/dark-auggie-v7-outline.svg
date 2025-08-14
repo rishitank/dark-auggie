@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" fill="none">
+  <title>Dark Auggie v7 — Outline</title>
+  <defs>
+    <linearGradient id="v7g_core" x1="128" y1="60" x2="128" y2="196">
+      <stop offset="0" stop-color="#3D855E"/>
+      <stop offset="1" stop-color="#2F6A4A"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Outline-forward variant (no plate) -->
+  <path d="M128 36 L206 200 H176 L156 160 H100 L80 200 H50 L128 36 Z" fill="none" stroke="#0E0E0E" stroke-width="3"/>
+  <path d="M128 52 L172 146 H152 L128 98 L104 146 H84 L128 52 Z" fill="none" stroke="#141414" stroke-width="2"/>
+  <rect x="121" y="70" width="14" height="128" rx="7" fill="url(#v7g_core)"/>
+</svg>
+

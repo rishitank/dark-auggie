@@ -1,0 +1,69 @@
+name: AI Changelog
+
+on:
+  workflow_dispatch:
+    inputs:
+      since:
+        description: Optional git since range (e.g., '2 weeks ago')
+        required: false
+      from:
+        description: Optional from ref/tag/sha
+        required: false
+      to:
+        description: Optional to ref/tag/sha
+        required: false
+      output:
+        description: Output file path
+        default: CHANGELOG_AI.md
+        required: false
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Generate AI Changelog
+        env:
+          AUGMENT_SESSION_AUTH: ${{ secrets.AUGMENT_SESSION_AUTH }}
+          AUGMENT_API_URL: ${{ secrets.AUGMENT_API_URL }}
+          AUGMENT_API_TOKEN: ${{ secrets.AUGMENT_API_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: |
+          ARGS=""
+          if [ -n "${{ github.event.inputs.since }}" ]; then ARGS="$ARGS --since \"${{ github.event.inputs.since }}\""; fi
+          if [ -n "${{ github.event.inputs.from }}" ]; then ARGS="$ARGS --from \"${{ github.event.inputs.from }}\""; fi
+          if [ -n "${{ github.event.inputs.to }}" ]; then ARGS="$ARGS --to \"${{ github.event.inputs.to }}\""; fi
+          if [ -n "${{ github.event.inputs.output }}" ]; then ARGS="$ARGS --output \"${{ github.event.inputs.output }}\""; fi
+          echo "Running changelog with args: $ARGS"
+          npm run -s changelog:ai -- $ARGS
+
+      - name: Commit and push changelog
+        if: ${{ github.ref == 'refs/heads/main' }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add CHANGELOG_AI.md
+          if git diff --cached --quiet; then
+            echo "No changelog changes to commit."
+            exit 0
+          fi
+          git commit -m "docs(changelog): update AI changelog [skip ci]"
+          git push

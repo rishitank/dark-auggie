@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" fill="none">
+  <title>Dark Auggie v2 — Visor Emphasis</title>
+  <defs>
+    <linearGradient id="v2g_bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0A0A0A"/>
+      <stop offset="1" stop-color="#161616"/>
+    </linearGradient>
+    <linearGradient id="v2g_core" x1="128" y1="60" x2="128" y2="196">
+      <stop offset="0" stop-color="#46A46F"/>
+      <stop offset="1" stop-color="#2F6A4A"/>
+    </linearGradient>
+    <radialGradient id="v2g_glow" cx="50%" cy="35%" r="60%">
+      <stop offset="0" stop-color="#2F6A4A" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#2F6A4A" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect x="12" y="12" width="232" height="232" rx="28" fill="url(#v2g_bg)"/>
+  <rect x="12" y="12" width="232" height="232" rx="28" stroke="#0D0D0E" stroke-width="1.5"/>
+
+  <!-- A silhouette -->
+  <path d="M128 34 L208 204 H176 L156 160 H100 L80 204 H48 L128 34 Z" fill="#0E0E0E"/>
+
+  <!-- Visor band -->
+  <rect x="76" y="108" width="104" height="18" rx="9" fill="#0C0C0C" stroke="#222" stroke-width="1"/>
+  <rect x="96" y="108" width="64" height="18" rx="9" fill="#0C0C0C" stroke="#2A2A2A" stroke-width="1"/>
+
+  <!-- Core with soft radial glow -->
+  <circle cx="128" cy="138" r="84" fill="url(#v2g_glow)"/>
+  <rect x="122" y="70" width="12" height="128" rx="6" fill="url(#v2g_core)"/>
+</svg>
+
