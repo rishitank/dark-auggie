@@ -264,7 +264,9 @@ export class DarkAuggie implements INodeType {
         const mcpJsonPath = (this.getNodeParameter('mcpJsonPath', i) as string) || '';
         if (mcpJsonPath) {
           const item = items[i];
-          const value: any = mcpJsonPath.split('.').reduce((acc: any, key: string) => (acc == null ? undefined : acc[key]), item?.json as any);
+          const value: any = mcpJsonPath
+            .split('.')
+            .reduce((acc: any, key: string) => (acc == null ? undefined : acc[key]), item?.json as any);
           if (value !== undefined && value !== null) {
             flags.push('--mcp-config', typeof value === 'string' ? value : JSON.stringify(value));
           }

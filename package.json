@@ -39,6 +39,7 @@
     "prepare": "npm run build",
     "lint": "eslint . --ext .ts --config eslint.config.ts",
     "format:check": "prettier --check .",
+    "format": "prettier --write .",
     "typecheck": "tsc --noEmit",
     "test:ci": "jest --config jest.config.ts --ci --coverage --watchAll=false",
     "changelog:ai": "node scripts/run-ai-changelog.js",

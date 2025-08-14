@@ -22,7 +22,6 @@ import { dirname, resolve } from 'node:path';
 
 const execFile = promisify(_execFile);
 
-
 // TypeScript on Node may not have fetch types by default; rely on runtime global
 // and use a minimal declaration to satisfy the compiler.
 declare const fetch: any;
