@@ -2,11 +2,10 @@
 
 # 1.0.0 (2025-08-14)
 
-
 ### Features
 
-* **icon:** add Dark Auggie SVG icon and wire into node ([abf8629](https://github.com/rishitank/dark-auggie/commit/abf8629a64d0cd92d56e3fd33bfc13ae83886a70))
-* **node:** extend Dark Auggie with stdin, MCP flags, env injection, session controls; scaffold repo ([e739f8b](https://github.com/rishitank/dark-auggie/commit/e739f8b495b8a4143715f89bbdc4193c6ef65729))
+- **icon:** add Dark Auggie SVG icon and wire into node ([abf8629](https://github.com/rishitank/dark-auggie/commit/abf8629a64d0cd92d56e3fd33bfc13ae83886a70))
+- **node:** extend Dark Auggie with stdin, MCP flags, env injection, session controls; scaffold repo ([e739f8b](https://github.com/rishitank/dark-auggie/commit/e739f8b495b8a4143715f89bbdc4193c6ef65729))
 
 All notable changes to this project will be documented in this file by semantic-release.
 
