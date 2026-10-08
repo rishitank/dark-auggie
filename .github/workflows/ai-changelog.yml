@@ -46,14 +46,21 @@ jobs:
           AUGMENT_API_TOKEN: ${{ secrets.AUGMENT_API_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
+          # Inputs go through env and a bash array: interpolating them into the
+          # script was a shell-injection risk, and the escaped quotes were
+          # passed to the script literally, splitting values like '2 weeks ago'.
+          INPUT_SINCE: ${{ github.event.inputs.since }}
+          INPUT_FROM: ${{ github.event.inputs.from }}
+          INPUT_TO: ${{ github.event.inputs.to }}
+          INPUT_OUTPUT: ${{ github.event.inputs.output }}
         run: |
-          ARGS=""
-          if [ -n "${{ github.event.inputs.since }}" ]; then ARGS="$ARGS --since \"${{ github.event.inputs.since }}\""; fi
-          if [ -n "${{ github.event.inputs.from }}" ]; then ARGS="$ARGS --from \"${{ github.event.inputs.from }}\""; fi
-          if [ -n "${{ github.event.inputs.to }}" ]; then ARGS="$ARGS --to \"${{ github.event.inputs.to }}\""; fi
-          if [ -n "${{ github.event.inputs.output }}" ]; then ARGS="$ARGS --output \"${{ github.event.inputs.output }}\""; fi
-          echo "Running changelog with args: $ARGS"
-          npm run -s changelog:ai -- $ARGS
+          args=()
+          if [ -n "${INPUT_SINCE}" ]; then args+=(--since "${INPUT_SINCE}"); fi
+          if [ -n "${INPUT_FROM}" ]; then args+=(--from "${INPUT_FROM}"); fi
+          if [ -n "${INPUT_TO}" ]; then args+=(--to "${INPUT_TO}"); fi
+          if [ -n "${INPUT_OUTPUT}" ]; then args+=(--output "${INPUT_OUTPUT}"); fi
+          echo "Running changelog with args: ${args[*]}"
+          npm run -s changelog:ai -- "${args[@]}"
 
       - name: Commit and push changelog
         if: ${{ github.ref == 'refs/heads/main' }}
