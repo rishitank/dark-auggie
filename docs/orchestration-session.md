@@ -73,6 +73,7 @@ Each lane lives under:
 - Use a non‑VT terminal for best reliability.
 - Minimal, robust launcher (flattens instruction to one line):
 
+```bash
 env -i HOME="$HOME" PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin" \
   AUGMENT_SESSION_AUTH="$(cat "$HOME/.augment/session.json" 2>/dev/null)" \
   /bin/bash -lc \
@@ -80,6 +81,7 @@ env -i HOME="$HOME" PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sb
  --workspace-root \"/Users/rishitank/github/dark-auggie-worktrees/<lane>\" \
  --rules \"$HOME/.augment/rules/sub-agent-orchestration.md\" \
  --compact --model gpt5"
+```
 
 (Repeat for each lane; or wrap in a small bash loop.)
 
